@@ -51,11 +51,72 @@ export default {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))',
         },
+        // MD3 color mappings using CSS variables
+        'on-primary': 'var(--md-sys-color-on-primary)',
+        'primary-container': 'var(--md-sys-color-primary-container)',
+        'on-primary-container': 'var(--md-sys-color-on-primary-container)',
+
+        'on-secondary': 'var(--md-sys-color-on-secondary)',
+        'secondary-container': 'var(--md-sys-color-secondary-container)',
+        'on-secondary-container': 'var(--md-sys-color-on-secondary-container)',
+
+        tertiary: 'var(--md-sys-color-tertiary)',
+        'on-tertiary': 'var(--md-sys-color-on-tertiary)',
+        'tertiary-container': 'var(--md-sys-color-tertiary-container)',
+        'on-tertiary-container': 'var(--md-sys-color-on-tertiary-container)',
+
+        surface: 'var(--md-sys-color-surface)',
+        'on-surface': 'var(--md-sys-color-on-surface)',
+        'surface-variant': 'var(--md-sys-color-surface-variant)',
+        'on-surface-variant': 'var(--md-sys-color-on-surface-variant)',
+
+        outline: 'var(--md-sys-color-outline)',
+        'outline-variant': 'var(--md-sys-color-outline-variant)',
+
+        'on-background': 'var(--md-sys-color-on-background)',
+
+        error: 'var(--md-sys-color-error)',
+        'on-error': 'var(--md-sys-color-on-error)',
+        'error-container': 'var(--md-sys-color-error-container)',
+        'on-error-container': 'var(--md-sys-color-on-error-container)',
+      },
+      fontFamily: {
+        sans: ['Poppins', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+      },
+      spacing: {
+        'xs': 'var(--spacing-xs)',
+        'sm': 'var(--spacing-sm)',
+        'md': 'var(--spacing-md)',
+        'lg': 'var(--spacing-lg)',
+        'xl': 'var(--spacing-xl)',
+        '2xl': 'var(--spacing-2xl)',
       },
       borderRadius: {
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)',
+      },
+      boxShadow: {
+        'elevation-0': 'var(--md-sys-elevation-level0)',
+        'elevation-1': 'var(--md-sys-elevation-level1)',
+        'elevation-2': 'var(--md-sys-elevation-level2)',
+        'elevation-3': 'var(--md-sys-elevation-level3)',
+        'elevation-4': 'var(--md-sys-elevation-level4)',
+        'elevation-5': 'var(--md-sys-elevation-level5)',
+      },
+      transitionDuration: {
+        'short1': 'var(--md-sys-motion-duration-short1)',
+        'short2': 'var(--md-sys-motion-duration-short2)',
+        'short3': 'var(--md-sys-motion-duration-short3)',
+        'short4': 'var(--md-sys-motion-duration-short4)',
+        'medium1': 'var(--md-sys-motion-duration-medium1)',
+        'medium2': 'var(--md-sys-motion-duration-medium2)',
+        'medium3': 'var(--md-sys-motion-duration-medium3)',
+        'medium4': 'var(--md-sys-motion-duration-medium4)',
+      },
+      transitionTimingFunction: {
+        'standard': 'var(--md-sys-motion-easing-standard)',
+        'emphasized': 'var(--md-sys-motion-easing-emphasized)',
       },
       keyframes: {
         'accordion-down': {
