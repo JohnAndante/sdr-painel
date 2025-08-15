@@ -1,0 +1,23 @@
+[tools]
+node = "20.11.0"
+npm = "10.2.4"
+
+[env]
+NODE_ENV = "development"
+VITE_NODE_ENV = "development"
+
+[tasks.dev]
+run = "npm run dev"
+description = "Start development server"
+
+[tasks.install]
+run = "npm install"
+description = "Install dependencies"
+
+[tasks.clean]
+run = [
+  "rm -rf node_modules/.vite",
+  "rm -rf node_modules/.cache", 
+  "npm cache clean --force"
+]
+description = "Clean all caches"

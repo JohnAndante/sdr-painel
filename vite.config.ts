@@ -10,6 +10,14 @@ export default defineConfig({
             '@': path.resolve(__dirname, './src'),
         },
     },
+    esbuild: {
+        target: 'es2022',
+        platform: 'browser',
+        format: 'esm',
+    },
+    define: {
+        global: 'globalThis',
+    },
     server: {
         port: 3000,
         host: true,
