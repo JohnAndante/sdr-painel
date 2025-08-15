@@ -203,14 +203,12 @@ export default function DashboardPage({
             <BarChart
               title="Sucessos por horário (0-23h)"
               data={barChartData}
-              darkMode={darkMode}
             />
           </div>
           <div className="min-w-0">
             <LineChart
               title="Taxa de sucesso por agente (últimos 30 dias)"
               data={lineChartData}
-              darkMode={darkMode}
             />
           </div>
         </div>

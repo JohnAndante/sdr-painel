@@ -16,16 +16,16 @@ const buttonVariants = cva(
         secondary: "gradient-secondary text-white hover:shadow-md active:shadow-sm disabled:opacity-50 border-0",
 
         // Outlined Button
-        outline: "border border-[--md-sys-color-outline-variant] text-primary bg-transparent hover:bg-primary/8 active:bg-primary/12 disabled:opacity-50",
+        outline: "border border-outline-variant text-primary bg-transparent hover:bg-primary/8 active:bg-primary/12 disabled:opacity-50",
 
         // Text Button
         ghost: "text-primary bg-transparent hover:bg-primary/10 active:bg-primary/15 disabled:opacity-50",
 
         // Tonal Button
-        tonal: "bg-[--md-sys-color-primary-container] text-secondary-foreground hover:bg-secondary/90 shadow-sm disabled:opacity-50",
+        tonal: "bg-primary-container text-on-primary-container hover:shadow-sm disabled:opacity-50",
 
         // Error Button
-        destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-sm disabled:opacity-50",
+        destructive: "bg-error text-on-error hover:shadow-sm disabled:opacity-50",
 
         // Link style
         link: "text-primary underline-offset-4 hover:underline bg-transparent p-0 h-auto disabled:opacity-50",

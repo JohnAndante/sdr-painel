@@ -1,61 +1,49 @@
-"use client";
-import { ErrorBoundary } from "./components/ErrorBoundary";
-import { LoadingScreen } from "./components/LoadingScreen";
+import { useState } from 'react'
+import { ThemeProvider, useDarkMode } from '@/contexts/ThemeContext'
+import AppShell from '@/components/AppShell'
+import DashboardPage from '@/components/pages/DashboardPage'
+import { User } from './types'
 
-import { ResponsiveLayout } from "./components/ResponsiveLayout";
-import AuthWrapper from "./components/AuthWrapper";
-import AgenteForm from "./components/AgenteForm";
-import { useAuth } from "./hooks/useAuth";
-import { useTheme } from "./hooks/useTheme";
-import { useAppState } from "./hooks/useAppState";
-
-export default function App() {
-  // Custom hooks for state management
-  const auth = useAuth();
-  const theme = useTheme();
-  const appState = useAppState(auth.logout);
-
-  // Show loading screen while checking authentication
-  if (auth.isLoading) {
-    return <LoadingScreen message="Verificando autenticação..." />;
-  }
-
-  // Show authentication screens if not authenticated
-  if (!auth.isAuthenticated) {
-    return (
-      <ErrorBoundary>
-        <AuthWrapper
-          darkMode={theme.darkMode}
-          isMobile={theme.isMobile}
-          onAuthSuccess={auth.login}
-        />
-      </ErrorBoundary>
-    );
-  }
-
-  // Show main application if authenticated
-  return (
-    <ErrorBoundary>
-      <div className="relative min-h-screen w-full">
-        <ResponsiveLayout
-          darkMode={theme.darkMode}
-          isMobile={theme.isMobile}
-          isTablet={theme.isTablet}
-          currentPage={appState.currentPage}
-          currentUser={auth.currentUser!}
-          onNavigate={appState.navigateTo}
-          appState={appState}
-          onToggleDarkMode={theme.toggleDarkMode}
-        />
-
-        {/* Agent Form Dialog */}
-        <AgenteForm
-          open={appState.formDialogOpen}
-          onOpenChange={appState.setFormDialogOpen}
-          agente={appState.selectedAgente}
-          darkMode={theme.darkMode}
-        />
-      </div>
-    </ErrorBoundary>
-  );
+// Simulação simples de dados
+const mockUser: User = {
+  id: 1,
+  name: 'Usuario Teste',
+  email: 'teste@example.com',
+  role: 'admin',
+  lastLogin: new Date().toISOString()
 }
+
+// Componente interno que usa o Context
+function AppContent() {
+  const { darkMode, toggleDarkMode } = useDarkMode()
+  const [isMobile, setIsMobile] = useState(false)
+  const [currentPage, setCurrentPage] = useState<'dashboard' | 'agentes' | 'rotinas' | 'usuarios'>('dashboard')
+
+  return (
+    <div className="App">
+      <AppShell
+        darkMode={darkMode}
+        isMobile={isMobile}
+        currentPage={currentPage}
+        currentUser={mockUser}
+        onNavigate={(page) => setCurrentPage(page as any)}
+        onToggleDarkMode={toggleDarkMode}
+      >
+        <DashboardPage
+          darkMode={darkMode}
+          isMobile={isMobile}
+        />
+      </AppShell>
+    </div>
+  )
+}
+
+function App() {
+  return (
+    <ThemeProvider initialDarkMode={false}>
+      <AppContent />
+    </ThemeProvider>
+  )
+}
+
+export default App

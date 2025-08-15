@@ -1,76 +1,27 @@
-import { useState, useEffect, useCallback } from 'react';
-import { BREAKPOINTS } from '../constants/app';
+/**
+ * @deprecated Use ThemeContext instead
+ * These hooks are kept for backward compatibility but will be removed
+ * Use the context-based hooks from src/contexts/ThemeContext.tsx
+ */
 
-interface UseThemeReturn {
-  darkMode: boolean;
-  isMobile: boolean;
-  isTablet: boolean;
-  isDesktop: boolean;
-  screenSize: 'mobile' | 'tablet' | 'desktop';
-  toggleDarkMode: () => void;
-  // Keep manual toggle for demo purposes
-  toggleMobileDemo: () => void;
+import { getTheme, getChartTheme, colors, gradients, chartColors } from '@/lib/theme'
+
+export const useThemeLegacy = (darkMode: boolean) => {
+  return getTheme(darkMode)
 }
 
-export function useTheme(): UseThemeReturn {
-  const [darkMode, setDarkMode] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
-  const [isTablet, setIsTablet] = useState(false);
-  const [isDesktop, setIsDesktop] = useState(true);
-  const [mobileDemo, setMobileDemo] = useState(false);
+export const useChartThemeLegacy = (darkMode: boolean) => {
+  return getChartTheme(darkMode)
+}
 
-  // Auto-detect screen size based on viewport
-  useEffect(() => {
-    const updateScreenSize = () => {
-      const width = window.innerWidth;
-      
-      // Use actual viewport for responsive behavior
-      const mobile = width < parseInt(BREAKPOINTS.md); // < 768px
-      const tablet = width >= parseInt(BREAKPOINTS.md) && width < parseInt(BREAKPOINTS.lg); // 768px - 1024px
-      const desktop = width >= parseInt(BREAKPOINTS.lg); // >= 1024px
-      
-      setIsMobile(mobile || mobileDemo);
-      setIsTablet(tablet && !mobileDemo);
-      setIsDesktop(desktop && !mobileDemo);
-    };
+export const useColorsLegacy = (darkMode: boolean) => {
+  return darkMode ? colors.dark : colors.light
+}
 
-    // Initial check
-    updateScreenSize();
+export const useGradients = () => {
+  return gradients
+}
 
-    // Listen for viewport changes
-    const mediaQuery = window.matchMedia(`(max-width: ${BREAKPOINTS.lg})`);
-    const handleChange = () => updateScreenSize();
-    
-    mediaQuery.addEventListener('change', handleChange);
-    window.addEventListener('resize', updateScreenSize);
-
-    return () => {
-      mediaQuery.removeEventListener('change', handleChange);
-      window.removeEventListener('resize', updateScreenSize);
-    };
-  }, [mobileDemo]);
-
-  const getScreenSize = (): 'mobile' | 'tablet' | 'desktop' => {
-    if (isMobile) return 'mobile';
-    if (isTablet) return 'tablet';
-    return 'desktop';
-  };
-
-  const toggleDarkMode = useCallback(() => {
-    setDarkMode(prev => !prev);
-  }, []);
-
-  const toggleMobileDemo = useCallback(() => {
-    setMobileDemo(prev => !prev);
-  }, []);
-
-  return {
-    darkMode,
-    isMobile,
-    isTablet,
-    isDesktop,
-    screenSize: getScreenSize(),
-    toggleDarkMode,
-    toggleMobileDemo,
-  };
+export const useChartColorsLegacy = () => {
+  return chartColors
 }

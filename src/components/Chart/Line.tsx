@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Badge } from '../ui/badge'
+import { useChartTheme, useThemeContext } from '@/contexts/ThemeContext'
 
 interface DataPoint {
   x: number
@@ -14,43 +15,15 @@ interface LineData {
 interface LineChartProps {
   title: string
   data: LineData[]
-  darkMode?: boolean
 }
 
-const AGENT_COLORS = [
-  '#4F48EC',
-  '#28A745',
-  '#FD7E14',
-  '#DC3545',
-  '#6F42C1',
-  '#20C997',
-]
-
-const colors = {
-  light: {
-    surface: '#FCFCFD',
-    onSurface: '#0B1F30',
-    surfaceVariant: '#F1F5F9',
-    onSurfaceVariant: '#46668A',
-    outline: '#9FB8CD'
-  },
-  dark: {
-    surface: '#1F3545',
-    onSurface: '#FFFFFF',
-    surfaceVariant: '#15293A',
-    onSurfaceVariant: '#9FB8CD',
-    outline: '#405F75'
-  }
-}
-
-
-
-export default function LineChart({ title, data, darkMode = false }: LineChartProps) {
+export default function LineChart({ title, data }: LineChartProps) {
   const [selectedAgents, setSelectedAgents] = useState<string[]>(
     data.map(item => item.agent)
   )
 
-  const theme = darkMode ? colors.dark : colors.light
+  const theme = useChartTheme()
+  const { chartColors } = useThemeContext()
 
   const toggleAgent = (agent: string) => {
     setSelectedAgents(prev =>
@@ -111,7 +84,7 @@ export default function LineChart({ title, data, darkMode = false }: LineChartPr
       <div className="flex flex-wrap gap-2 mb-6">
         {data.map((item, index) => {
           const isSelected = selectedAgents.includes(item.agent)
-          const chipColor = AGENT_COLORS[index % AGENT_COLORS.length]
+          const chipColor = chartColors.agents[index % chartColors.agents.length]
 
           return (
             <button
@@ -179,7 +152,7 @@ export default function LineChart({ title, data, darkMode = false }: LineChartPr
           {data.map((item, index) => {
             if (!selectedAgents.includes(item.agent)) return null
 
-            const lineColor = AGENT_COLORS[index % AGENT_COLORS.length]
+            const lineColor = chartColors.agents[index % chartColors.agents.length]
             const path = generatePath(item.points)
 
             return (

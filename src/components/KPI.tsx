@@ -3,6 +3,7 @@
 import React from 'react'
 import { Card, CardContent } from './ui/card'
 import { cn } from './ui/utils'
+import { useColors } from '@/contexts/ThemeContext'
 
 interface KPIProps {
   label: string
@@ -26,39 +27,41 @@ export default function KPI({
   gradient = false
 }: KPIProps) {
 
-  // Custom color mapping based on state using new palette
+  const colors = useColors()
+
+  // Custom color mapping based on state using centralized theme
   const getStateColors = () => {
-    const colors = {
+    const stateMap = {
       default: {
-        icon: 'text-[--md-sys-color-on-surface-variant]',
-        value: 'text-[--md-sys-color-on-surface]',
-        label: 'text-[--md-sys-color-on-surface-variant]',
-        subinfo: 'text-[--md-sys-color-on-surface-variant]',
-        bg: gradient ? 'gradient-surface' : 'bg-[--md-sys-color-surface-container]'
+        iconColor: colors.onSurfaceVariant,
+        valueColor: colors.onSurface,
+        labelColor: colors.onSurfaceVariant,
+        subinfoColor: colors.onSurfaceVariant,
+        bgColor: colors.surfaceContainer
       },
       good: {
-        icon: 'text-[--md-sys-color-primary]',
-        value: 'text-[--md-sys-color-primary]',
-        label: 'text-[--md-sys-color-on-surface-variant]',
-        subinfo: 'text-[--md-sys-color-on-surface-variant]',
-        bg: gradient ? 'gradient-primary' : 'bg-[--md-sys-color-primary-container]'
+        iconColor: colors.primary,
+        valueColor: colors.primary,
+        labelColor: colors.onSurfaceVariant,
+        subinfoColor: colors.onSurfaceVariant,
+        bgColor: colors.surfaceContainer
       },
       alert: {
-        icon: 'text-[--md-sys-color-error]',
-        value: 'text-[--md-sys-color-error]',
-        label: 'text-[--md-sys-color-on-surface-variant]',
-        subinfo: 'text-[--md-sys-color-on-surface-variant]',
-        bg: gradient ? 'gradient-error' : 'bg-[--md-sys-color-error-container]'
+        iconColor: colors.error,
+        valueColor: colors.error,
+        labelColor: colors.onSurfaceVariant,
+        subinfoColor: colors.onSurfaceVariant,
+        bgColor: colors.surfaceContainer
       },
       warning: {
-        icon: 'text-[--md-sys-color-secondary]',
-        value: 'text-[--md-sys-color-secondary]',
-        label: 'text-[--md-sys-color-on-surface-variant]',
-        subinfo: 'text-[--md-sys-color-on-surface-variant]',
-        bg: gradient ? 'gradient-secondary' : 'bg-[--md-sys-color-secondary-container]'
+        iconColor: colors.secondary,
+        valueColor: colors.secondary,
+        labelColor: colors.onSurfaceVariant,
+        subinfoColor: colors.onSurfaceVariant,
+        bgColor: colors.surfaceContainer
       }
     }
-    return colors[state]
+    return stateMap[state]
   }
 
   const stateColors = getStateColors()
@@ -75,35 +78,36 @@ export default function KPI({
     large: 'md3-headline-medium'
   }
 
-  // Adjust text colors for gradient backgrounds
-  const textColorOverride = gradient && (state === 'good' || state === 'warning') ? 'text-white' : '';
-
   return (
     <Card
       variant={variant}
       elevation={variant === 'elevated' ? 1 : 0}
       className={cn(
         "transition-all duration-200 hover:shadow-md group overflow-hidden",
-        "md3-state-layer",
-        gradient && stateColors.bg
+        gradient && (state === 'good' ? 'gradient-primary' : state === 'warning' ? 'gradient-secondary' : state === 'alert' ? 'gradient-error' : 'gradient-surface')
       )}
+      style={!gradient ? { backgroundColor: stateColors.bgColor } : undefined}
     >
       <CardContent className={cn("space-y-4 relative z-10", sizeClasses[size])}>
         {/* Header with icon and label */}
         <div className="flex items-center gap-3">
           {icon && (
-            <div className={cn(
-              "flex items-center justify-center w-10 h-10 rounded-full flex-shrink-0",
-              gradient ? "bg-white/20" : "bg-[--md-sys-color-surface-variant]",
-              textColorOverride || stateColors.icon
-            )}>
+            <div
+              className="flex items-center justify-center w-10 h-10 rounded-full flex-shrink-0"
+              style={{
+                backgroundColor: gradient ? 'rgba(255, 255, 255, 0.2)' : colors.surfaceVariant,
+                color: gradient ? '#FFFFFF' : stateColors.iconColor
+              }}
+            >
               {icon}
             </div>
           )}
-          <span className={cn(
-            "md3-label-large font-semibold",
-            textColorOverride || stateColors.label
-          )}>
+          <span
+            className="md3-label-large font-semibold"
+            style={{
+              color: gradient ? '#FFFFFF' : stateColors.labelColor
+            }}
+          >
             {label}
           </span>
         </div>
@@ -111,20 +115,26 @@ export default function KPI({
         {/* Content aligned with label text */}
         <div className={cn("space-y-2", icon ? "ml-[52px]" : "ml-0")}>
           {/* Main value */}
-          <div className={cn(
-            "font-semibold tracking-tight leading-none",
-            valueSizeClasses[size],
-            textColorOverride || stateColors.value
-          )}>
+          <div
+            className={cn(
+              "font-semibold tracking-tight leading-none",
+              valueSizeClasses[size]
+            )}
+            style={{
+              color: gradient ? '#FFFFFF' : stateColors.valueColor
+            }}
+          >
             {value}
           </div>
 
           {/* Supporting information */}
           {subinfo && (
-            <div className={cn(
-              "md3-body-small font-medium",
-              textColorOverride ? 'text-white/80' : stateColors.subinfo
-            )}>
+            <div
+              className="md3-body-small font-medium"
+              style={{
+                color: gradient ? 'rgba(255, 255, 255, 0.8)' : stateColors.subinfoColor
+              }}
+            >
               {subinfo}
             </div>
           )}

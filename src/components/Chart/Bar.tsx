@@ -1,33 +1,14 @@
 'use client'
 
+import { useChartTheme } from '@/contexts/ThemeContext'
+
 interface BarChartProps {
   title: string
   data: { hour: number; success: number; total: number }[]
-  darkMode?: boolean
 }
 
-export default function BarChart({ title, data, darkMode = false }: BarChartProps) {
-  // Use project colors that match the overall design
-  const colors = {
-    light: {
-      surface: '#FCFCFD',
-      onSurface: '#0B1F30',
-      surfaceVariant: '#F1F5F9',
-      onSurfaceVariant: '#46668A',
-      primary: '#2497F9',
-      outline: '#9FB8CD'
-    },
-    dark: {
-      surface: '#1F3545',
-      onSurface: '#FFFFFF',
-      surfaceVariant: '#15293A',
-      onSurfaceVariant: '#9FB8CD',
-      primary: '#2497F9',
-      outline: '#405F75'
-    }
-  }
-
-  const theme = darkMode ? colors.dark : colors.light
+export default function BarChart({ title, data }: BarChartProps) {
+  const theme = useChartTheme()
 
   const maxValue = Math.max(...data.map(d => d.total))
 
