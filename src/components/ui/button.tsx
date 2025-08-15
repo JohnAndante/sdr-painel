@@ -11,22 +11,22 @@ const buttonVariants = cva(
       variant: {
         // Primary Button with gradient
         default: "gradient-primary text-white hover:shadow-md active:shadow-sm disabled:opacity-[0.38] border-0",
-        
+
         // Secondary Button with gradient
         secondary: "gradient-secondary text-white hover:shadow-md active:shadow-sm disabled:opacity-[0.38] border-0",
-        
+
         // Outlined Button
-        outline: "border border-[--md-sys-color-outline] text-primary bg-transparent hover:bg-primary/8 active:bg-primary/12 disabled:opacity-[0.38]",
-        
+        outline: "border border-[--md-sys-color-outline-variant] text-primary bg-transparent hover:bg-primary/8 active:bg-primary/12 disabled:opacity-[0.38]",
+
         // Text Button
         ghost: "text-primary bg-transparent hover:bg-primary/8 active:bg-primary/12 disabled:opacity-[0.38]",
-        
+
         // Tonal Button
         tonal: "bg-[--md-sys-color-primary-container] text-[--md-sys-color-on-primary-container] hover:shadow-sm disabled:opacity-[0.38]",
-        
+
         // Error Button
         destructive: "bg-destructive text-destructive-foreground hover:shadow-md active:shadow-sm disabled:opacity-[0.38]",
-        
+
         // Link style
         link: "text-primary underline-offset-4 hover:underline bg-transparent p-0 h-auto disabled:opacity-[0.38]",
       },
@@ -49,7 +49,7 @@ const buttonVariants = cva(
 
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
+  VariantProps<typeof buttonVariants> {
   asChild?: boolean
   gradient?: boolean
 }
@@ -57,11 +57,11 @@ export interface ButtonProps
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, asChild = false, gradient = false, ...props }, ref) => {
     const Comp = asChild ? Slot : "button"
-    
+
     // Add gradient class if specified
-    const gradientClass = gradient && variant === "default" ? "gradient-primary" : 
-                         gradient && variant === "secondary" ? "gradient-secondary" : "";
-    
+    const gradientClass = gradient && variant === "default" ? "gradient-primary" :
+      gradient && variant === "secondary" ? "gradient-secondary" : "";
+
     return (
       <Comp
         className={cn(buttonVariants({ variant, size }), gradientClass, className)}

@@ -30,9 +30,9 @@ export default function PageContainer({
     <div className="h-full flex flex-col">
       {/* Page Header */}
       <div className="
-        flex-shrink-0 
-        pb-6 mb-6 
-        border-b border-border
+        flex-shrink-0
+        pb-6 mb-6
+        border-b border-[--md-sys-color-outline-variant]
       ">
         {/* Breadcrumb */}
         {breadcrumb.length > 0 && (
@@ -43,7 +43,7 @@ export default function PageContainer({
                   {index > 0 && (
                     <ChevronRight className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                   )}
-                  <span 
+                  <span
                     className={cn(
                       "md3-label-large transition-colors",
                       index === breadcrumb.length - 1
@@ -61,7 +61,7 @@ export default function PageContainer({
 
         {/* Title and Actions */}
         <div className="
-          flex flex-col sm:flex-row sm:items-start sm:justify-between 
+          flex flex-col sm:flex-row sm:items-start sm:justify-between
           gap-4
         ">
           <div className="min-w-0 flex-1 space-y-2">
@@ -80,7 +80,7 @@ export default function PageContainer({
               </p>
             )}
           </div>
-          
+
           {actions && (
             <div className="flex-shrink-0">
               {actions}
