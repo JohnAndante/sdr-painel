@@ -12,15 +12,15 @@ import { Period } from '../../types'
 interface DashboardPageProps {
   darkMode: boolean
   isMobile: boolean
-  selectedPeriod: Period
-  onPeriodChange: (period: Period) => void
+  selectedPeriod?: Period
+  onPeriodChange?: (period: Period) => void
 }
 
 export default function DashboardPage({
   darkMode,
   isMobile,
-  selectedPeriod,
-  onPeriodChange
+  selectedPeriod = 'hoje',
+  onPeriodChange = () => { }
 }: DashboardPageProps) {
   const getKPIData = () => {
     switch (selectedPeriod) {
@@ -162,7 +162,6 @@ export default function DashboardPage({
             subinfo={kpiData.totalRotinas.subinfo}
             icon={<RotateCcw className="w-5 h-5" />}
             state="default"
-            darkMode={darkMode}
           />
           <KPI
             label="Ligações Efetuadas"
@@ -170,7 +169,6 @@ export default function DashboardPage({
             subinfo={kpiData.ligacoesEfetuadas.subinfo}
             icon={<Phone className="w-5 h-5" />}
             state="default"
-            darkMode={darkMode}
           />
           <KPI
             label="Sucessos"
@@ -178,7 +176,6 @@ export default function DashboardPage({
             subinfo={kpiData.sucessos.subinfo}
             icon={<CheckCircle className="w-5 h-5" />}
             state="good"
-            darkMode={darkMode}
           />
           <KPI
             label="Falhas"
@@ -186,7 +183,6 @@ export default function DashboardPage({
             subinfo={kpiData.falhas.subinfo}
             icon={<XCircle className="w-5 h-5" />}
             state="alert"
-            darkMode={darkMode}
           />
           <KPI
             label="Taxa de Sucesso"
@@ -194,7 +190,6 @@ export default function DashboardPage({
             subinfo={kpiData.taxaSucesso.subinfo}
             icon={<TrendingUp className="w-5 h-5" />}
             state="good"
-            darkMode={darkMode}
           />
         </div>
 
@@ -236,7 +231,6 @@ export default function DashboardPage({
                   { key: 'falhas', label: 'Falhas', sortable: true }
                 ]}
                 data={topAgentsData}
-                darkMode={darkMode}
               />
             </div>
           </div>
@@ -258,7 +252,6 @@ export default function DashboardPage({
                   { key: 'status', label: 'Status', sortable: true }
                 ]}
                 data={rotinasRecentesData}
-                darkMode={darkMode}
               />
             </div>
           </div>

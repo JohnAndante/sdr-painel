@@ -1,7 +1,15 @@
 'use client'
 
 import { Button } from './ui/button'
+import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import { Sheet, SheetContent } from './ui/sheet'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from './ui/dropdown-menu'
 import {
   LayoutDashboard,
   Users,
@@ -52,6 +60,15 @@ export default function SideNav({
     }
   }
 
+  const getUserInitials = (name: string) => {
+    return name
+      .split(' ')
+      .map(word => word[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2)
+  }
+
   const NavigationItem = ({
     item,
     isSelected,
@@ -68,23 +85,18 @@ export default function SideNav({
         variant="ghost"
         onClick={() => handleItemClick(item.id)}
         className={cn(
-          "w-full justify-start gap-3 h-14 px-4 rounded-full",
-          "transition-all duration-200",
-          showLabel ? "pr-6" : "w-14 px-0 justify-center",
+          // Base MD3 Navigation List Item styles
+          "w-full justify-start gap-3 h-12 px-3 rounded-full md3-state-layer md3-transition-standard",
+          showLabel ? "pr-4" : "w-12 px-0 justify-center",
+          // Selected state using established design tokens
           isSelected
-            ? "bg-[--md-sys-color-secondary-container] text-[--md-sys-color-on-secondary-container] hover:bg-[--md-sys-color-secondary-container]/90"
-            : "text-[--md-sys-color-on-surface-variant] hover:bg-[--md-sys-color-on-surface]/8 active:bg-[--md-sys-color-on-surface]/12"
+            ? "bg-secondary text-secondary-foreground hover:bg-secondary/90 md3-elevation-1"
+            : "text-muted-foreground hover:bg-muted/50"
         )}
       >
-        <Icon className={cn(
-          "h-6 w-6 flex-shrink-0",
-          isSelected ? "text-[--md-sys-color-on-secondary-container]" : "text-[--md-sys-color-on-surface-variant]"
-        )} />
+        <Icon className="h-5 w-5 flex-shrink-0" />
         {showLabel && (
-          <span className={cn(
-            "md3-label-large font-medium",
-            isSelected ? "text-[--md-sys-color-on-secondary-container]" : "text-[--md-sys-color-on-surface-variant]"
-          )}>
+          <span className="md3-label-medium">
             {item.label}
           </span>
         )}
@@ -94,28 +106,25 @@ export default function SideNav({
 
   const NavigationContent = ({ showLabels }: { showLabels: boolean }) => (
     <div className="flex flex-col h-full">
-      {/* Header */}
+      {/* Header with Icon and Brand Name */}
       {showLabels && (
-        <div className={cn(
-          "w-full justify-start gap-3 h-14 px-[28px] flex items-center",
-          "transition-all duration-200",
-          "border-b border-[--md-sys-color-outline-variant] pr-6",
-          "text-[--md-sys-color-on-surface-variant] hover:bg-[--md-sys-color-on-surface]/8 active:bg-[--md-sys-color-on-surface]/12"
-        )}>
-          <Brain className="h-6 w-6 flex-shrink-0" />
-          <div>
-            <h1 className="md3-title-large text-[--md-sys-color-on-surface] font-semibold">
-              Gerson
-            </h1>
-            <p className="md3-body-small text-[--md-sys-color-on-surface-variant] mt-[-2px]">
-              Call Center IA
-            </p>
+        <div className="px-4 py-4 border-b border-border">
+          <div className="flex items-center gap-3">
+            <Brain className="w-8 h-8 text-primary flex-shrink-0" />
+            <div className="flex-1 min-w-0">
+              <h2 className="md3-title-small text-foreground">
+                Gerson
+              </h2>
+              <p className="md3-body-small text-muted-foreground">
+                Call Center IA
+              </p>
+            </div>
           </div>
         </div>
       )}
 
       {/* Navigation Items */}
-      <nav className="flex-1 p-3">
+      <nav className="flex-1 p-2">
         <div className="space-y-1">
           {menuItems.map((item) => (
             <NavigationItem
@@ -129,75 +138,184 @@ export default function SideNav({
       </nav>
 
       {/* User Section */}
-      {showLabels && (
-        <div className="border-t border-[--md-sys-color-outline-variant] p-3">
-          <div className="flex items-center gap-3 px-4 py-3 rounded-lg bg-surface-variant">
-            <div className="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center">
-              <User className="h-4 w-4" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="md3-body-medium text-on-surface font-medium truncate">
-                {currentUser.name}
-              </p>
-              <p className="md3-body-small text-on-surface-variant truncate">
-                {currentUser.role === 'admin' ? 'Administrador' : 'Usuário'}
-              </p>
-            </div>
-          </div>
+      <div className="border-t border-border p-2">
+        {showLabels ? (
+          // Expanded User Menu with Dropdown
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                className="w-full justify-start gap-3 h-14 px-3 rounded-lg md3-state-layer hover:bg-muted/50 focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                <Avatar className="h-8 w-8">
+                  <AvatarImage src={currentUser.avatar || undefined} />
+                  <AvatarFallback className="gradient-primary text-white md3-label-medium">
+                    {getUserInitials(currentUser.name)}
+                  </AvatarFallback>
+                </Avatar>
 
-          <div className="flex gap-2 mt-2">
-            <Button
-              variant="ghost"
-              onClick={onToggleDarkMode}
-              className={cn(
-                "flex-1 justify-start gap-3 h-12 px-4 rounded-full",
-                "text-on-surface-variant hover:bg-on-surface/8 active:bg-on-surface/12"
-              )}
+                <div className="flex-1 min-w-0 text-left">
+                  <p className="md3-body-small text-foreground truncate">
+                    {currentUser.name}
+                  </p>
+                  <p className="md3-body-small text-muted-foreground truncate">
+                    {currentUser.role === 'admin' ? 'Admin' : 'Usuário'}
+                  </p>
+                </div>
+              </Button>
+            </DropdownMenuTrigger>
+
+            <DropdownMenuContent
+              align="end"
+              side="right"
+              className="w-56 md3-elevation-2 bg-popover border-border"
+              sideOffset={8}
             >
-              {theme === 'dark' ? (
-                <Sun className="h-5 w-5" />
-              ) : (
-                <Moon className="h-5 w-5" />
-              )}
-              <span className="md3-label-large">
-                {theme === 'dark' ? 'Light' : 'Dark'}
-              </span>
-            </Button>
-          </div>
+              {/* User Info Header */}
+              <div className="px-3 py-3 border-b border-border">
+                <p className="md3-body-medium text-popover-foreground">
+                  {currentUser.name}
+                </p>
+                <p className="md3-body-small text-muted-foreground">
+                  {currentUser.email}
+                </p>
+              </div>
 
-          <Button
-            variant="ghost"
-            onClick={() => handleItemClick('logout')}
-            className={cn(
-              "w-full justify-start gap-3 h-12 mt-2 px-4 rounded-full",
-              "text-error hover:bg-error/8 active:bg-error/12"
-            )}
-          >
-            <LogOut className="h-5 w-5" />
-            <span className="md3-label-large">Sair</span>
-          </Button>
-        </div>
-      )}
+              {/* Profile Menu Item */}
+              <DropdownMenuItem
+                onClick={() => {
+                  console.log('Navigate to profile');
+                  if (onClose) onClose();
+                }}
+                className="gap-3 px-3 py-3 cursor-pointer hover:bg-muted focus:bg-muted"
+              >
+                <User className="h-5 w-5 text-muted-foreground" />
+                <span className="md3-label-large text-popover-foreground">Perfil</span>
+              </DropdownMenuItem>
+
+              {/* Dark Mode Toggle */}
+              <DropdownMenuItem
+                onClick={(e) => {
+                  e.preventDefault();
+                  onToggleDarkMode();
+                }}
+                className="gap-3 px-3 py-3 cursor-pointer hover:bg-muted focus:bg-muted"
+              >
+                {theme === 'dark' ? (
+                  <Sun className="h-5 w-5 text-muted-foreground" />
+                ) : (
+                  <Moon className="h-5 w-5 text-muted-foreground" />
+                )}
+                <span className="md3-label-large text-popover-foreground">
+                  {theme === 'dark' ? 'Tema Claro' : 'Tema Escuro'}
+                </span>
+              </DropdownMenuItem>
+
+              <DropdownMenuSeparator className="bg-border" />
+
+              {/* Logout Menu Item */}
+              <DropdownMenuItem
+                onClick={() => {
+                  console.log('Logout clicked');
+                  if (onClose) onClose();
+                }}
+                className="gap-3 px-3 py-3 cursor-pointer hover:bg-destructive/10 focus:bg-destructive/10"
+              >
+                <LogOut className="h-5 w-5 text-destructive" />
+                <span className="md3-label-large text-destructive">Sair</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : (
+          // Collapsed User Avatar Only
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                className="w-12 h-12 p-0 rounded-full md3-state-layer hover:bg-muted/50 focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                <Avatar className="h-8 w-8">
+                  <AvatarImage src={currentUser.avatar || undefined} />
+                  <AvatarFallback className="gradient-primary text-white md3-label-medium">
+                    {getUserInitials(currentUser.name)}
+                  </AvatarFallback>
+                </Avatar>
+              </Button>
+            </DropdownMenuTrigger>
+
+            <DropdownMenuContent
+              align="end"
+              side="right"
+              className="w-56 md3-elevation-2 bg-popover border-border"
+              sideOffset={8}
+            >
+              {/* User Info Header */}
+              <div className="px-3 py-3 border-b border-border">
+                <p className="md3-body-medium text-popover-foreground">
+                  {currentUser.name}
+                </p>
+                <p className="md3-body-small text-muted-foreground">
+                  {currentUser.email}
+                </p>
+              </div>
+
+              {/* Profile Menu Item */}
+              <DropdownMenuItem
+                onClick={() => {
+                  console.log('Navigate to profile');
+                  if (onClose) onClose();
+                }}
+                className="gap-3 px-3 py-3 cursor-pointer hover:bg-muted focus:bg-muted"
+              >
+                <User className="h-5 w-5 text-muted-foreground" />
+                <span className="md3-label-large text-popover-foreground">Perfil</span>
+              </DropdownMenuItem>
+
+              {/* Dark Mode Toggle */}
+              <DropdownMenuItem
+                onClick={(e) => {
+                  e.preventDefault();
+                  onToggleDarkMode();
+                }}
+                className="gap-3 px-3 py-3 cursor-pointer hover:bg-muted focus:bg-muted"
+              >
+                {theme === 'dark' ? (
+                  <Sun className="h-5 w-5 text-muted-foreground" />
+                ) : (
+                  <Moon className="h-5 w-5 text-muted-foreground" />
+                )}
+                <span className="md3-label-large text-popover-foreground">
+                  {theme === 'dark' ? 'Tema Claro' : 'Tema Escuro'}
+                </span>
+              </DropdownMenuItem>
+
+              <DropdownMenuSeparator className="bg-border" />
+
+              {/* Logout Menu Item */}
+              <DropdownMenuItem
+                onClick={() => {
+                  console.log('Logout clicked');
+                  if (onClose) onClose();
+                }}
+                className="gap-3 px-3 py-3 cursor-pointer hover:bg-destructive/10 focus:bg-destructive/10"
+              >
+                <LogOut className="h-5 w-5 text-destructive" />
+                <span className="md3-label-large text-destructive">Sair</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
+      </div>
     </div>
   )
 
   // Mobile Drawer
   if (mode === 'drawer') {
     return (
-      <Sheet
-        open={open}
-        onOpenChange={(open: boolean) => {
-          if (!open && onClose) {
-            onClose();
-          }
-        }}
-      >
+      <Sheet open={open} onOpenChange={(isOpen) => !isOpen && onClose?.()}>
         <SheetContent
           side="left"
-          className={cn(
-            "w-80 p-0 bg-surface border-r border-[--md-sys-color-outline-variant]",
-            "md3-elevation-1"
-          )}
+          className="w-64 p-0 bg-background border-r border-border md3-elevation-1"
         >
           <NavigationContent showLabels={true} />
         </SheetContent>
@@ -208,9 +326,8 @@ export default function SideNav({
   // Desktop Navigation Rail/Drawer
   return (
     <aside className={cn(
-      "h-full bg-surface border-r border-[--md-sys-color-outline-variant] transition-all duration-300",
-      "md3-elevation-0",
-      mode === 'expanded' ? "w-80" : "w-20"
+      "h-full bg-background border-r border-border md3-transition-standard md3-elevation-0",
+      mode === 'expanded' ? "w-64" : "w-16"
     )}>
       <NavigationContent showLabels={mode === 'expanded'} />
     </aside>

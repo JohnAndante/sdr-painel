@@ -17,16 +17,14 @@ interface Column {
 interface DataTableProps {
   columns: Column[]
   data: any[]
-  darkMode: boolean
   searchable?: boolean
   searchPlaceholder?: string
   pageSize?: number
 }
 
-export default function DataTable({ 
-  columns, 
-  data, 
-  darkMode,
+export default function DataTable({
+  columns,
+  data,
   searchable = false,
   searchPlaceholder = "Buscar...",
   pageSize = 10
@@ -41,7 +39,7 @@ export default function DataTable({
   // Filter data based on search term
   const filteredData = useMemo(() => {
     if (!searchTerm) return data
-    
+
     return data.filter(item =>
       columns.some(column => {
         const value = item[column.key]
@@ -78,11 +76,11 @@ export default function DataTable({
 
   const handleSort = (key: string) => {
     let direction: 'asc' | 'desc' = 'asc'
-    
+
     if (sortConfig && sortConfig.key === key && sortConfig.direction === 'asc') {
       direction = 'desc'
     }
-    
+
     setSortConfig({ key, direction })
   }
 
@@ -90,9 +88,9 @@ export default function DataTable({
     if (!sortConfig || sortConfig.key !== columnKey) {
       return null
     }
-    
-    return sortConfig.direction === 'asc' ? 
-      <ChevronUp className="h-4 w-4" /> : 
+
+    return sortConfig.direction === 'asc' ?
+      <ChevronUp className="h-4 w-4" /> :
       <ChevronDown className="h-4 w-4" />
   }
 
@@ -128,7 +126,7 @@ export default function DataTable({
       <CardContent className="p-0">
         {/* Table */}
         <div className="overflow-x-auto">
-          <table className="w-full">
+          <table className="w-full border-collapse">
             {/* Header */}
             <thead>
               <tr className="border-b border-border">
@@ -141,11 +139,11 @@ export default function DataTable({
                     )}
                     onClick={() => column.sortable && handleSort(column.key)}
                   >
-                    <div className="flex items-center gap-2">
-                      {column.label}
+                    <div className="flex items-center">
+                      <span>{column.label}</span>
                       {column.sortable && (
-                        <div className="flex items-center text-muted-foreground">
-                          {getSortIcon(column.key) || <div className="w-4 h-4" />}
+                        <div className="flex items-center text-muted-foreground ml-2 w-4">
+                          {getSortIcon(column.key)}
                         </div>
                       )}
                     </div>
@@ -158,8 +156,8 @@ export default function DataTable({
             <tbody>
               {paginatedData.length === 0 ? (
                 <tr>
-                  <td 
-                    colSpan={columns.length} 
+                  <td
+                    colSpan={columns.length}
                     className="px-6 py-12 text-center text-muted-foreground md3-body-large"
                   >
                     {searchTerm ? 'Nenhum resultado encontrado' : 'Nenhum dado disponível'}
@@ -170,8 +168,8 @@ export default function DataTable({
                   <tr
                     key={index}
                     className={cn(
-                      "border-b border-border hover:bg-foreground/4 transition-colors",
-                      "md3-state-layer"
+                      "hover:bg-foreground/4 transition-colors",
+                      index < paginatedData.length - 1 && "border-b border-border"
                     )}
                   >
                     {columns.map((column) => (
@@ -195,7 +193,7 @@ export default function DataTable({
             <div className="text-muted-foreground md3-body-small">
               Página {currentPage} de {totalPages}
             </div>
-            
+
             <div className="flex items-center gap-2">
               <Button
                 variant="outline"
@@ -206,7 +204,7 @@ export default function DataTable({
               >
                 Anterior
               </Button>
-              
+
               <Button
                 variant="outline"
                 size="sm"

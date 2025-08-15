@@ -1,9 +1,10 @@
 'use client'
 
 import React, { useState } from 'react'
-import TopBar from './TopBar'
 import SideNav from './SideNav'
+import MobileMenuButton from './MobileMenuButton'
 import { User, PageId } from '../types'
+import { cn } from './ui/utils'
 
 interface AppShellProps {
   children: React.ReactNode
@@ -43,6 +44,11 @@ export default function AppShell({
 
   return (
     <div className="flex h-screen w-full overflow-hidden">
+      {/* Mobile Menu Button */}
+      {isMobile && (
+        <MobileMenuButton onClick={handleMenuToggle} />
+      )}
+
       {/* Desktop Sidebar */}
       {!isMobile && (
         <aside className="hidden lg:flex flex-shrink-0">
@@ -71,12 +77,16 @@ export default function AppShell({
         />
       )}
 
-      {/* Main Content Area */}
+      {/* Main Content Area - Full height without TopBar */}
       <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
-        {/* Page Content */}
+        {/* Page Content - Full area with mobile padding adjustment */}
         <main className="flex-1 overflow-auto bg-background">
           <div className="container mx-auto h-full">
-            <div className="h-full px-4 py-6 lg:px-6">
+            <div className={cn(
+              "h-full px-4 py-6 lg:px-6",
+              // Add top padding on mobile to avoid floating button
+              isMobile && "pt-20"
+            )}>
               {children}
             </div>
           </div>

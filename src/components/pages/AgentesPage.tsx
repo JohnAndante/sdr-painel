@@ -157,7 +157,6 @@ export default function AgentesPage({
             { key: 'acoes', label: 'Ações', sortable: false }
           ]}
           data={formattedData}
-          darkMode={darkMode}
         />
       </div>
     </PageContainer>

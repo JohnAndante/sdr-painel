@@ -1,60 +1,54 @@
 'use client'
 
-import React from 'react'
-
 interface BarChartProps {
   title: string
   data: { hour: number; success: number; total: number }[]
   darkMode?: boolean
 }
 
-const MD3_TOKENS = {
-  light: {
-    'sys/surface': '#FFFFFF',
-    'sys/on-surface': '#100E34',
-    'sys/surface-variant': '#F5F6FB',
-    'sys/on-surface-variant': '#3F4151',
-    'sys/primary': '#4F48EC',
-    'sys/outline': '#C7CAD6'
-  },
-  dark: {
-    'dark/surface': '#0E0D18',
-    'dark/on-surface': '#E3E5F0',
-    'dark/surface-variant': '#2B2D3A',
-    'dark/outline': '#8B8FA1',
-    'dark/primary': '#BFC2FF'
-  }
-}
-
 export default function BarChart({ title, data, darkMode = false }: BarChartProps) {
-  const colors = darkMode ? MD3_TOKENS.dark : MD3_TOKENS.light
-  const surfaceColor = darkMode ? colors['dark/surface'] : colors['sys/surface']
-  const onSurfaceColor = darkMode ? colors['dark/on-surface'] : colors['sys/on-surface']
-  const onSurfaceVariantColor = darkMode ? colors['dark/outline'] : colors['sys/on-surface-variant']
-  const primaryColor = darkMode ? colors['dark/primary'] : colors['sys/primary']
-  const surfaceVariantColor = darkMode ? colors['dark/surface-variant'] : colors['sys/surface-variant']
-  const outlineColor = darkMode ? colors['dark/outline'] : colors['sys/outline']
+  // Use project colors that match the overall design
+  const colors = {
+    light: {
+      surface: '#FCFCFD',
+      onSurface: '#0B1F30',
+      surfaceVariant: '#F1F5F9',
+      onSurfaceVariant: '#46668A',
+      primary: '#2497F9',
+      outline: '#9FB8CD'
+    },
+    dark: {
+      surface: '#1F3545',
+      onSurface: '#FFFFFF',
+      surfaceVariant: '#15293A',
+      onSurfaceVariant: '#9FB8CD',
+      primary: '#2497F9',
+      outline: '#405F75'
+    }
+  }
+
+  const theme = darkMode ? colors.dark : colors.light
 
   const maxValue = Math.max(...data.map(d => d.total))
 
   return (
-    <div 
+    <div
       className="p-6 rounded-lg border"
       style={{
-        backgroundColor: surfaceColor,
-        border: `1px solid ${outlineColor}`,
+        backgroundColor: theme.surface,
+        border: `1px solid ${theme.outline}`,
         borderRadius: '12px',
-        fontFamily: 'Roboto Flex, Roboto, sans-serif'
+        fontFamily: 'Poppins, sans-serif'
       }}
     >
       {/* Title */}
-      <div 
+      <div
         className="mb-6"
         style={{
           fontSize: '16px', // Title/Medium
           lineHeight: '24px',
           fontWeight: '500',
-          color: onSurfaceColor
+          color: theme.onSurface
         }}
       >
         {title}
@@ -63,32 +57,32 @@ export default function BarChart({ title, data, darkMode = false }: BarChartProp
       {/* Legend */}
       <div className="flex gap-4 mb-6">
         <div className="flex items-center gap-2">
-          <div 
+          <div
             className="w-3 h-3 rounded"
-            style={{ backgroundColor: primaryColor }}
+            style={{ backgroundColor: theme.primary }}
           ></div>
-          <span 
+          <span
             style={{
               fontSize: '12px', // Body/Small
               lineHeight: '16px',
               fontWeight: '400',
-              color: onSurfaceVariantColor
+              color: theme.onSurfaceVariant
             }}
           >
             Sucesso
           </span>
         </div>
         <div className="flex items-center gap-2">
-          <div 
+          <div
             className="w-3 h-3 rounded"
-            style={{ backgroundColor: surfaceVariantColor }}
+            style={{ backgroundColor: theme.surfaceVariant }}
           ></div>
-          <span 
+          <span
             style={{
               fontSize: '12px', // Body/Small
               lineHeight: '16px',
               fontWeight: '400',
-              color: onSurfaceVariantColor
+              color: theme.onSurfaceVariant
             }}
           >
             Total
@@ -97,19 +91,19 @@ export default function BarChart({ title, data, darkMode = false }: BarChartProp
       </div>
 
       {/* Chart Area */}
-      <div className="relative overflow-hidden">
+      <div className="relative overflow-hidden" style={{ minHeight: '220px' }}>
         <div className="flex" style={{ paddingLeft: '40px' }}>
           {/* Y-axis labels */}
-          <div className="absolute left-0 top-0 flex flex-col justify-between" style={{ width: '32px', height: '160px' }}>
+          <div className="absolute left-0 top-0 flex flex-col justify-between" style={{ width: '32px', height: '190px' }}>
             {[maxValue, Math.floor(maxValue * 0.75), Math.floor(maxValue * 0.5), Math.floor(maxValue * 0.25), 0].map((value, index) => (
-              <div 
+              <div
                 key={index}
                 className="text-right"
                 style={{
                   fontSize: '11px', // Label/Small
                   lineHeight: '16px',
                   fontWeight: '500',
-                  color: onSurfaceVariantColor,
+                  color: theme.onSurfaceVariant,
                   transform: 'translateY(-8px)' // Center align with bars
                 }}
               >
@@ -120,27 +114,27 @@ export default function BarChart({ title, data, darkMode = false }: BarChartProp
 
           {/* Bars */}
           <div className="flex-1">
-            <div className="flex items-end justify-between gap-1" style={{ height: '160px' }}>
+            <div className="flex items-end justify-between gap-1" style={{ height: '190px' }}>
               {data.map((item) => (
                 <div key={item.hour} className="flex flex-col items-center flex-1">
                   {/* Bar container */}
-                  <div className="relative w-full flex flex-col justify-end" style={{ height: '160px' }}>
+                  <div className="relative w-full flex flex-col justify-end" style={{ height: '190px' }}>
                     {/* Total bar (background) */}
-                    <div 
+                    <div
                       className="w-full rounded-t"
                       style={{
-                        backgroundColor: surfaceVariantColor,
-                        height: `${(item.total / maxValue) * 160}px`,
+                        backgroundColor: theme.surfaceVariant,
+                        height: `${(item.total / maxValue) * 190}px`,
                         minHeight: '2px',
                         borderRadius: '4px 4px 0 0'
                       }}
                     ></div>
                     {/* Success bar (overlay) */}
-                    <div 
+                    <div
                       className="absolute bottom-0 w-full rounded-t"
                       style={{
-                        backgroundColor: primaryColor,
-                        height: `${(item.success / maxValue) * 160}px`,
+                        backgroundColor: theme.primary,
+                        height: `${(item.success / maxValue) * 190}px`,
                         minHeight: item.success > 0 ? '2px' : '0px',
                         borderRadius: '4px 4px 0 0'
                       }}
@@ -153,14 +147,14 @@ export default function BarChart({ title, data, darkMode = false }: BarChartProp
             {/* Hour labels */}
             <div className="flex justify-between gap-1 mt-2">
               {data.map((item) => (
-                <div 
+                <div
                   key={item.hour}
                   className="flex-1 text-center"
                   style={{
                     fontSize: '11px', // Label/Small
                     lineHeight: '16px',
                     fontWeight: '500',
-                    color: onSurfaceVariantColor
+                    color: theme.onSurfaceVariant
                   }}
                 >
                   {item.hour}h

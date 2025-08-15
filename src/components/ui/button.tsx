@@ -10,25 +10,25 @@ const buttonVariants = cva(
     variants: {
       variant: {
         // Primary Button with gradient
-        default: "gradient-primary text-white hover:shadow-md active:shadow-sm disabled:opacity-[0.38] border-0",
+        default: "gradient-primary text-white hover:shadow-md active:shadow-sm disabled:opacity-50 border-0",
 
         // Secondary Button with gradient
-        secondary: "gradient-secondary text-white hover:shadow-md active:shadow-sm disabled:opacity-[0.38] border-0",
+        secondary: "gradient-secondary text-white hover:shadow-md active:shadow-sm disabled:opacity-50 border-0",
 
         // Outlined Button
-        outline: "border border-[--md-sys-color-outline-variant] text-primary bg-transparent hover:bg-primary/8 active:bg-primary/12 disabled:opacity-[0.38]",
+        outline: "border border-[--md-sys-color-outline-variant] text-primary bg-transparent hover:bg-primary/8 active:bg-primary/12 disabled:opacity-50",
 
         // Text Button
-        ghost: "text-primary bg-transparent hover:bg-primary/8 active:bg-primary/12 disabled:opacity-[0.38]",
+        ghost: "text-primary bg-transparent hover:bg-primary/10 active:bg-primary/15 disabled:opacity-50",
 
         // Tonal Button
-        tonal: "bg-[--md-sys-color-primary-container] text-[--md-sys-color-on-primary-container] hover:shadow-sm disabled:opacity-[0.38]",
+        tonal: "bg-[--md-sys-color-primary-container] text-secondary-foreground hover:bg-secondary/90 shadow-sm disabled:opacity-50",
 
         // Error Button
-        destructive: "bg-destructive text-destructive-foreground hover:shadow-md active:shadow-sm disabled:opacity-[0.38]",
+        destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-sm disabled:opacity-50",
 
         // Link style
-        link: "text-primary underline-offset-4 hover:underline bg-transparent p-0 h-auto disabled:opacity-[0.38]",
+        link: "text-primary underline-offset-4 hover:underline bg-transparent p-0 h-auto disabled:opacity-50",
       },
       size: {
         // MD3 standard button height is 40dp
