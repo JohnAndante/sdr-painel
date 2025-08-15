@@ -1,15 +1,17 @@
 'use client'
 
-import React from 'react'
 import { Button } from './ui/button'
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from './ui/sheet'
+import { Sheet, SheetContent } from './ui/sheet'
 import {
   LayoutDashboard,
   Users,
   RotateCcw,
   Settings,
   LogOut,
-  User
+  User,
+  Moon,
+  Sun,
+  Brain
 } from 'lucide-react'
 import { cn } from './ui/utils'
 import { User as UserType } from '../types'
@@ -20,6 +22,7 @@ interface SideNavProps {
   selectedItem: string
   currentUser: UserType
   onItemClick: (item: string) => void
+  onToggleDarkMode: () => void
   onClose?: () => void
   open?: boolean
 }
@@ -30,6 +33,7 @@ export default function SideNav({
   selectedItem,
   currentUser,
   onItemClick,
+  onToggleDarkMode,
   onClose,
   open = false
 }: SideNavProps) {
@@ -64,23 +68,22 @@ export default function SideNav({
         variant="ghost"
         onClick={() => handleItemClick(item.id)}
         className={cn(
-          // MD3 Navigation List Item
-          "w-full justify-start gap-3 h-14 px-4 rounded-full md3-state-layer",
+          "w-full justify-start gap-3 h-14 px-4 rounded-full",
           "transition-all duration-200",
           showLabel ? "pr-6" : "w-14 px-0 justify-center",
           isSelected
-            ? "bg-secondary-container text-on-secondary-container hover:bg-secondary-container/90"
-            : "text-on-surface-variant hover:bg-on-surface/8 active:bg-on-surface/12"
+            ? "bg-[--md-sys-color-secondary-container] text-[--md-sys-color-on-secondary-container] hover:bg-[--md-sys-color-secondary-container]/90"
+            : "text-[--md-sys-color-on-surface-variant] hover:bg-[--md-sys-color-on-surface]/8 active:bg-[--md-sys-color-on-surface]/12"
         )}
       >
         <Icon className={cn(
           "h-6 w-6 flex-shrink-0",
-          isSelected ? "text-on-secondary-container" : "text-on-surface-variant"
+          isSelected ? "text-[--md-sys-color-on-secondary-container]" : "text-[--md-sys-color-on-surface-variant]"
         )} />
         {showLabel && (
           <span className={cn(
             "md3-label-large font-medium",
-            isSelected ? "text-on-secondary-container" : "text-on-surface-variant"
+            isSelected ? "text-[--md-sys-color-on-secondary-container]" : "text-[--md-sys-color-on-surface-variant]"
           )}>
             {item.label}
           </span>
@@ -93,13 +96,21 @@ export default function SideNav({
     <div className="flex flex-col h-full">
       {/* Header */}
       {showLabels && (
-        <div className="px-4 py-[10px] border-b border-[--md-sys-color-outline-variant]">
-          <h1 className="md3-title-large text-[--md-sys-color-on-surface] font-semibold">
-            Gerson
-          </h1>
-          <p className="md3-body-small text-[--md-sys-color-on-surface-variant] mt-[-2px]">
-            Call Center IA
-          </p>
+        <div className={cn(
+          "w-full justify-start gap-3 h-14 px-[28px] flex items-center",
+          "transition-all duration-200",
+          "border-b border-[--md-sys-color-outline-variant] pr-6",
+          "text-[--md-sys-color-on-surface-variant] hover:bg-[--md-sys-color-on-surface]/8 active:bg-[--md-sys-color-on-surface]/12"
+        )}>
+          <Brain className="h-6 w-6 flex-shrink-0" />
+          <div>
+            <h1 className="md3-title-large text-[--md-sys-color-on-surface] font-semibold">
+              Gerson
+            </h1>
+            <p className="md3-body-small text-[--md-sys-color-on-surface-variant] mt-[-2px]">
+              Call Center IA
+            </p>
+          </div>
         </div>
       )}
 
@@ -134,6 +145,26 @@ export default function SideNav({
             </div>
           </div>
 
+          <div className="flex gap-2 mt-2">
+            <Button
+              variant="ghost"
+              onClick={onToggleDarkMode}
+              className={cn(
+                "flex-1 justify-start gap-3 h-12 px-4 rounded-full",
+                "text-on-surface-variant hover:bg-on-surface/8 active:bg-on-surface/12"
+              )}
+            >
+              {theme === 'dark' ? (
+                <Sun className="h-5 w-5" />
+              ) : (
+                <Moon className="h-5 w-5" />
+              )}
+              <span className="md3-label-large">
+                {theme === 'dark' ? 'Light' : 'Dark'}
+              </span>
+            </Button>
+          </div>
+
           <Button
             variant="ghost"
             onClick={() => handleItemClick('logout')}
@@ -153,7 +184,14 @@ export default function SideNav({
   // Mobile Drawer
   if (mode === 'drawer') {
     return (
-      <Sheet open={open} onOpenChange={onClose}>
+      <Sheet
+        open={open}
+        onOpenChange={(open: boolean) => {
+          if (!open && onClose) {
+            onClose();
+          }
+        }}
+      >
         <SheetContent
           side="left"
           className={cn(

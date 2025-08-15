@@ -46,7 +46,6 @@ export default function App() {
           onNavigate={appState.navigateTo}
           appState={appState}
           onToggleDarkMode={theme.toggleDarkMode}
-          onToggleMobile={theme.toggleMobileDemo}
         />
 
         {/* Agent Form Dialog */}

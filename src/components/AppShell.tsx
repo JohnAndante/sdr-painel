@@ -13,7 +13,6 @@ interface AppShellProps {
   currentUser: User
   onNavigate: (page: string) => void
   onToggleDarkMode: () => void
-  onToggleMobile: () => void
 }
 
 export default function AppShell({
@@ -23,8 +22,7 @@ export default function AppShell({
   currentPage,
   currentUser,
   onNavigate,
-  onToggleDarkMode,
-  onToggleMobile
+  onToggleDarkMode
 }: AppShellProps) {
   const [sideNavOpen, setSideNavOpen] = useState(false)
 
@@ -54,6 +52,7 @@ export default function AppShell({
             selectedItem={currentPage}
             currentUser={currentUser}
             onItemClick={handleNavigation}
+            onToggleDarkMode={onToggleDarkMode}
           />
         </aside>
       )}
@@ -66,6 +65,7 @@ export default function AppShell({
           selectedItem={currentPage}
           currentUser={currentUser}
           onItemClick={handleNavigation}
+          onToggleDarkMode={onToggleDarkMode}
           onClose={closeSideNav}
           open={sideNavOpen}
         />
@@ -73,17 +73,6 @@ export default function AppShell({
 
       {/* Main Content Area */}
       <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
-        {/* Top Bar */}
-        <TopBar
-          darkMode={darkMode}
-          isMobile={isMobile}
-          currentUser={currentUser}
-          onMenuToggle={handleMenuToggle}
-          onNavigate={onNavigate}
-          onToggleDarkMode={onToggleDarkMode}
-          onToggleMobile={onToggleMobile}
-        />
-
         {/* Page Content */}
         <main className="flex-1 overflow-auto bg-background">
           <div className="container mx-auto h-full">

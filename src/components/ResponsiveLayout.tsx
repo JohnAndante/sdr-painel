@@ -13,7 +13,6 @@ interface ResponsiveLayoutProps {
   onNavigate: (page: string) => void;
   appState: ReturnType<typeof useAppState>;
   onToggleDarkMode: () => void;
-  onToggleMobile: () => void;
 }
 
 export function ResponsiveLayout({
@@ -24,7 +23,6 @@ export function ResponsiveLayout({
   onNavigate,
   appState,
   onToggleDarkMode,
-  onToggleMobile,
 }: ResponsiveLayoutProps) {
   return (
     <div
@@ -48,7 +46,6 @@ export function ResponsiveLayout({
         currentUser={currentUser}
         onNavigate={onNavigate}
         onToggleDarkMode={onToggleDarkMode}
-        onToggleMobile={onToggleMobile}
       >
         <PageRenderer
           currentPage={currentPage}
