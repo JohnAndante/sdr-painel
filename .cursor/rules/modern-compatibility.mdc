@@ -1,0 +1,103 @@
+---
+description: Modern Compatibility - Voice AI Platform Philosophy
+alwaysApply: true
+---
+
+# Modern Compatibility - Voice AI Platform Philosophy
+
+## Project Philosophy
+
+This is a **whitelabel Voice AI automation platform** built for hackathon rapid development. The focus is on delivering core Voice AI functionality with excellent UX for managing subjects, configuring agents, and analyzing conversations.
+
+### Core Mission
+- **Voice AI Automation**: Enable companies to scale customer contact through intelligent virtual agents
+- **Whitelabel Ready**: Full customization support (logo, colors, branding)
+- **Data-Driven**: Rich analytics and conversation insights
+- **User-Friendly**: Intuitive interfaces for non-technical users
+
+## Modern Stack Requirements
+
+### React 19 + TypeScript
+- **Strict TypeScript**: No `any` types, full type safety
+- **Modern React**: Use latest hooks, concurrent features
+- **Component Composition**: Build complex UI from simple pieces
+
+### Vite + Fast Development
+- **Hot Module Replacement**: Instant feedback during development
+- **Optimized Builds**: Fast production builds
+- **Environment Variables**: Proper config management
+
+### UI/UX Excellence
+- **Radix UI Primitives**: Accessible, unstyled components
+- **Tailwind CSS**: Utility-first styling with design system
+- **Responsive Design**: Mobile-first approach
+- **Data Tables**: Excellent support for large datasets
+
+## Architecture Philosophy
+
+### Domain-Driven Design
+- **Feature Modules**: auth, subjects, agents, calls, analytics
+- **Clear Boundaries**: Each domain has its own components, types, controllers
+- **Scalable Structure**: Easy to add new features and modules
+
+### Performance-First
+- **Lazy Loading**: Load components and data on demand
+- **Optimistic Updates**: Immediate UI feedback
+- **Efficient Rendering**: Minimize re-renders
+- **Bundle Optimization**: Code splitting and tree shaking
+
+### Developer Experience
+- **Type Safety**: Catch errors at compile time
+- **Consistent Patterns**: Predictable code structure
+- **Hot Reloading**: Fast development cycle
+- **Automated Formatting**: Focus on logic, not style
+
+## Technology Decisions
+
+### Why React 19?
+- Latest features and performance improvements
+- Better concurrent rendering
+- Improved developer tools
+
+### Why Vite?
+- Fastest development server
+- Optimized production builds
+- Great TypeScript support
+
+### Why Radix UI?
+- Accessibility built-in
+- Unstyled (perfect for whitelabel)
+- Excellent component primitives
+
+### Why Tailwind CSS?
+- Rapid prototyping
+- Consistent design system
+- Easy customization for whitelabel
+- Excellent performance
+
+## Project Scope (Hackathon Focus)
+
+### ✅ High Priority (Quadrant I)
+- Authentication with company management
+- Subject CRUD with bulk import
+- Agent configuration (name, objective, personality, voice)
+- Conversation step management
+- Single call initiation
+- Basic conversation history
+
+### 🟡 Medium Priority (Quadrant II)
+- Role-based permissions
+- Call scheduling
+- Analytics dashboard
+- Conversation summaries
+- Advanced filtering
+
+### 🔵 Nice to Have (Quadrant III)
+- CSV export
+- Advanced step management
+- UI/UX polish
+
+### 🚫 Out of Scope (Quadrant IV)
+- Complex emotion analysis
+- Advanced step failure analysis
+- Enterprise integrations

@@ -1,0 +1,153 @@
+---
+description: Voice AI Platform - Code Rules & Patterns
+alwaysApply: true
+---
+
+# Voice AI Platform - Code Rules & Patterns
+
+This is the main index for all coding rules and patterns for the **`sdr-painel`** project. This project is a whitelabel Voice AI automation platform that allows companies to configure and scale customer voice contact through virtual agents, call scheduling, and conversation analytics.
+
+> **THIS PROJECT USES BUN, NOT NPM OR YARN**
+
+## 📋 Documentation Structure
+
+### Core Rules & Philosophy
+
+- **[modern-compatibility.mdc](./modern-compatibility.mdc)** - 🚨 **CRITICAL**: Project philosophy, modern stack (React 19, TypeScript, Vite), and its role as a Voice AI automation platform.
+- **[core-formatting.mdc](./core-formatting.mdc)** - ESLint/Prettier setup, TypeScript best practices, import order, and JSX formatting.
+
+### Architecture & Organization
+
+- **[project-architecture.mdc](./project-architecture.mdc)** - File structure, naming conventions, component hierarchy, and state management strategy for the Voice AI platform.
+- **[api-controllers.mdc](./api-controllers.mdc)** - Controller architecture, Axios patterns, API hook integration, and error handling strategies for managing subjects, agents, calls, and analytics.
+
+### Feature Modules
+
+- **[auth-patterns.mdc](./auth-patterns.mdc)** - Authentication and company management, user roles and permissions.
+- **[subject-management.mdc](./subject-management.mdc)** - Patterns for managing subjects (customers), bulk import, CRUD operations.
+- **[agent-configuration.mdc](./agent-configuration.mdc)** - Virtual agent creation, personality settings, voice selection, and conversation flow steps.
+- **[call-operations.mdc](./call-operations.mdc)** - Call initiation, scheduling, bulk operations, and real-time management.
+- **[analytics-dashboard.mdc](./analytics-dashboard.mdc)** - Conversation history, analytics dashboard, metrics, and reporting patterns.
+
+### Components & UI
+
+- **[component-patterns.mdc](./component-patterns.mdc)** - Patterns for building UI components with Radix UI and Tailwind CSS, including forms, data tables, and dashboards.
+- **[whitelabel-patterns.mdc](./whitelabel-patterns.mdc)** - Theming system, logo upload, color customization, and brand configuration patterns.
+
+## 🎯 Critical Rules Summary
+
+1.  **🚨 Voice AI Platform Focus**: This is a whitelabel platform for Voice AI automation. Every feature must support subject management, agent configuration, call operations, or analytics.
+2.  **Modern Stack Only**: Use React 19, TypeScript, and Vite features. No legacy code or patterns.
+3.  **TypeScript is Mandatory**: Use strict typing. Avoid `any`.
+4.  **Composition over Configuration**: Build complex UI and logic by composing smaller, single-purpose pieces.
+5.  **Hooks for Logic, Components for UI**: Keep presentation separate from business logic.
+6.  **Controllers for APIs**: Isolate all `axios` calls within controller classes. Components and hooks should call controllers.
+7.  **State Management**: Start with local state (`useState`). Only use a library like Zustand if prop drilling becomes a significant issue. Redux is forbidden.
+8.  **Radix + Tailwind First**: Always prefer building components with Radix UI primitives and styling with Tailwind CSS.
+9.  **Whitelabel Ready**: All UI components must support theming (logo, colors, brand customization).
+10. **Data Tables & Forms**: Focus on excellent UX for managing large datasets (subjects, calls, analytics).
+11. **Automated Formatting**: Rely on Prettier and ESLint plugins for consistent code style, import sorting, and class ordering.
+12. **Test Critical Paths**: Write tests for controllers, complex hooks, and core business flows (agent creation, call scheduling, analytics).
+
+## 🚀 Quick Reference
+
+### Modern Functional Component
+
+```typescript
+import React, { useState, useCallback } from 'react';
+
+interface MyComponentProps {
+    title: string;
+}
+
+const MyComponent: React.FC<MyComponentProps> = ({ title }) => {
+    const [count, setCount] = useState(0);
+
+    const handleClick = useCallback(() => {
+        setCount(prev => prev + 1);
+    }, []);
+
+    return (
+        <div>
+            <h2 className="text-lg font-bold">{title}</h2>
+            <p>Count: {count}</p>
+            <button onClick={handleClick}>Increment</button>
+        </div>
+    );
+};
+
+export default MyComponent;
+```
+
+### Controller Pattern
+
+```typescript
+// src/controllers/AgentController.ts
+import axiosWebservice from '@/lib/axios-webservice';
+import type { Agent, AgentRequest, CallRequest } from '@/types';
+
+export default class AgentController {
+    static createAgent = (agentData: AgentRequest): Promise<Agent> =>
+        new Promise((resolve, reject) => {
+            axiosWebservice
+                .post('/v4/agents', agentData)
+                .then(({ data }) => resolve(data))
+                .catch(reject);
+        });
+
+    static initiateCall = (callData: CallRequest): Promise<{ callId: string }> =>
+        new Promise((resolve, reject) => {
+            axiosWebservice
+                .post('/v4/calls/initiate', callData)
+                .then(({ data }) => resolve(data))
+                .catch(reject);
+        });
+}
+```
+
+### API Hook Pattern (`useApiState`)
+
+```typescript
+// src/hooks/useApiState.ts
+import { useState, useCallback } from 'react';
+
+export const useApiState = <T>(apiFunction: (...args: any[]) => Promise<T>) => {
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [data, setData] = useState<T | null>(null);
+
+    const execute = useCallback(
+        async (...args: unknown[]): Promise<T> => {
+            setLoading(true);
+            setError(null);
+            try {
+                const result = await apiFunction(...args);
+                setData(result);
+                return result;
+            } catch (err) {
+                const errorMessage =
+                    err instanceof Error ? err.message : 'Unknown error';
+                setError(errorMessage);
+                throw err;
+            } finally {
+                setLoading(false);
+            }
+        },
+        [apiFunction]
+    );
+
+    return { execute, loading, error, data };
+};
+
+// Usage in a component
+const {
+    execute: createAgent,
+    loading,
+    error,
+    data: agent,
+} = useApiState(AgentController.createAgent);
+
+const handleSubmit = useCallback((agentData: AgentRequest) => {
+    createAgent(agentData);
+}, [createAgent]);
+```

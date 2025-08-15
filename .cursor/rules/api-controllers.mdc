@@ -1,0 +1,350 @@
+---
+description: API Controllers & Request Patterns
+alwaysApply: false
+---
+# API Controllers & Request Patterns
+
+## 🏗️ Controller Architecture Philosophy
+
+### Design Principles
+
+- **Single Responsibility**: Each controller manages a specific area of the API.
+- **TypeScript First**: Strict typing across all layers.
+- **Promise-based**: Asynchronous operations with typed Promises.
+- **Contextual Error Handling**: Specific and contextualized error management.
+- **Stateless**: Controllers do not maintain state; they only make requests.
+- **Lightweight**: No unnecessary abstractions.
+
+### Controller Structure Pattern
+
+```
+controllers/
+├── AuthController.ts          # Authentication (example: src/controllers/AuthController.ts)
+├── [Future]UserController.ts  # Future user operations
+└── [Future]SessionController.ts # Session management
+```
+
+## 🎯 Generic Controller Pattern
+
+### Base Controller Structure
+
+Every controller should follow this template:
+
+```typescript
+// controllers/ExampleController.ts
+import axiosWebservice from '@/lib/axios-webservice';
+import type { RequestType, ResponseType } from '@/types';
+
+export default class ExampleController {
+    /**
+     * [Operation description]
+     * @param data - Request data
+     * @returns Promise with a typed response
+     * @throws Error with a specific message
+     */
+    static operationName = (data: RequestType): Promise<ResponseType> =>
+        new Promise((resolve, reject) => {
+            axiosWebservice
+                .post('/v4/endpoint', data, {
+                    headers: { 'custom-header': 'value' },
+                })
+                .then((response) => {
+                    // Response validation if necessary
+                    if (response.status === 200) {
+                        resolve(response.data);
+                    } else {
+                        reject(new Error('Resposta inesperada'));
+                    }
+                })
+                .catch((error) => {
+                    // Specific error handling
+                    reject(handleControllerError(error));
+                });
+        });
+}
+```
+
+### Controller Best Practices
+
+#### 1. Method Naming Convention
+
+```typescript
+// ✅ GOOD - Descriptive verbs
+static createUser = (userData) => { /* */ };
+static getUserById = (id) => { /* */ };
+static updateUserProfile = (id, data) => { /* */ };
+static deleteUser = (id) => { /* */ };
+
+// ❌ BAD - Generic names
+static user = (data) => { /* */ };
+static doSomething = (params) => { /* */ };
+```
+
+#### 2. Error Handling Strategy
+
+```typescript
+const handleControllerError = (error: any): Error => {
+    // Network errors
+    if (!error.response) {
+        return new Error('Erro de conexão. Verifique sua internet.');
+    }
+
+    const { status, data } = error.response;
+
+    // Business logic errors (specific codes)
+    if (data?.error?.code) {
+        return new Error(mapBusinessError(data.error.code));
+    }
+
+    // HTTP status errors
+    switch (status) {
+        case 401:
+            return new Error('Não autorizado');
+        case 403:
+            return new Error('Acesso negado');
+        case 422:
+            return new Error('Dados inválidos');
+        case 500:
+            return new Error('Erro interno do servidor');
+        default:
+            return new Error('Erro inesperado');
+    }
+};
+```
+
+#### 3. TypeScript Integration
+
+```typescript
+// types/api.ts - Define specific types
+interface CreateUserRequest {
+    name: string;
+    email: string;
+    password: string;
+}
+
+interface CreateUserResponse {
+    id: number;
+    name: string;
+    email: string;
+    created_at: string;
+}
+
+// Controller uses specific types
+static createUser = (data: CreateUserRequest): Promise<CreateUserResponse> => {
+    // Implementation
+};
+```
+
+## 🌐 Axios Configuration Patterns
+
+### Instance Configuration
+
+```typescript
+// lib/axios-webservice.ts
+const axiosWebservice = axios.create({
+    baseURL: baseWebserviceUrl,
+    timeout: 30000,
+    headers: {
+        'Content-Type': 'application/json',
+    },
+});
+```
+
+### Interceptor Patterns
+
+#### Request Interceptor
+
+```typescript
+axiosWebservice.interceptors.request.use((request) => {
+    // Auto-inject authentication token
+    const token = StorageManager.getToken();
+    if (token) {
+        request.headers['x-access-token'] = token;
+    }
+
+    // Add origin identification
+    if (!request.headers['Origin-Movement']) {
+        request.headers['Origin-Movement'] = 'PROJECT_NAME';
+    }
+
+    // Development logging
+    if (import.meta.env.DEV) {
+        console.log(
+            '📤 API Request:',
+            request.method?.toUpperCase(),
+            request.url
+        );
+    }
+
+    return request;
+});
+```
+
+#### Response Interceptor
+
+```typescript
+axiosWebservice.interceptors.response.use(
+    (response) => {
+        // Success logging
+        if (import.meta.env.DEV) {
+            console.log(
+                '📥 API Response:',
+                response.status,
+                response.config.url
+            );
+        }
+        return response;
+    },
+    (error) => {
+        // Global error handling
+        if (error.response?.status === 401) {
+            StorageManager.clearAuthData();
+            // Redirect to login if not already there
+            if (!window.location.pathname.includes('login')) {
+                window.location.href = '/login';
+            }
+        }
+
+        // Error logging
+        if (import.meta.env.DEV) {
+            console.error(
+                '❌ API Error:',
+                error.response?.status,
+                error.config?.url
+            );
+        }
+
+        return Promise.reject(error);
+    }
+);
+```
+
+## 🎣 API Hook Integration
+
+### How Controllers Work with Hooks
+
+Controllers are **stateless** and focus only on making requests. State management is handled by hooks:
+
+```typescript
+// ✅ GOOD - Clear separation
+// Hook manages state
+const { execute, loading, error } = useApiState(MyController.getData);
+
+// Controller only makes the request
+const handleSubmit = async (formData) => {
+    try {
+        const result = await execute(formData);
+        // Handle success
+    } catch (error) {
+        // Error is already in the hook's state
+    }
+};
+```
+
+### Generic Hook Pattern
+
+```typescript
+// hooks/useApiState.ts
+export const useApiState = <T>(apiFunction: (...args: any[]) => Promise<T>) => {
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [data, setData] = useState<T | null>(null);
+
+    const execute = useCallback(
+        async (...args: unknown[]): Promise<T> => {
+            setLoading(true);
+            setError(null);
+
+            try {
+                const result = await apiFunction(...args);
+                setData(result);
+                return result;
+            } catch (err) {
+                const errorMessage =
+                    err instanceof Error ? err.message : 'Unknown error';
+                setError(errorMessage);
+                throw err;
+            } finally {
+                setLoading(false);
+            }
+        },
+        [apiFunction]
+    );
+
+    return { execute, loading, error, data };
+};
+```
+
+## 📊 Type System Integration
+
+### API Response Types
+
+```typescript
+// types/api.ts - Generic patterns
+interface ApiResponse<T> {
+    data: T;
+    status: number;
+    message?: string;
+}
+
+interface ApiError {
+    error: {
+        code: number;
+        message: string;
+    };
+    request?: {
+        id?: string;
+        timestamp: string;
+    };
+}
+
+// Specific operation types
+interface LoginRequest {
+    credential: string;
+    password: string;
+}
+
+interface LoginResponse {
+    token: string;
+    user: UserData;
+    perform_biometrics: boolean;
+}
+```
+
+## 📋 Controller Checklist
+
+### Before Creating a Controller:
+
+- [ ] Define specific responsibility
+- [ ] Create TypeScript types for request/response
+- [ ] Plan specific error handling
+- [ ] Document methods with JSDoc
+- [ ] Consider retry/timeout cases
+
+### Controller Structure:
+
+- [ ] Organized imports (types first)
+- [ ] Static methods with descriptive names
+- [ ] Promise wrapper with typing
+- [ ] Specific error handling
+- [ ] Complete documentation
+
+### Integration:
+
+- [ ] Hooks for state management
+- [ ] Unit tests
+- [ ] Error boundaries in components
+- [ ] Logging for debugging
+
+## 📚 Reference Implementation
+
+For a complete and functional example, refer to:
+
+- **Real example**: `src/controllers/AuthController.ts`
+- **Related types**: `src/types/index.ts`
+- **Integration hook**: `src/hooks/useApiState.ts`
+- **Axios configuration**: `src/lib/axios-webservice.ts`
+
+---
+
+**Remember**: Controllers are **only** the communication layer with the API. All state, UI, and flow logic reside in components and hooks.

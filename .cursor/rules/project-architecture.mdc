@@ -1,0 +1,265 @@
+---
+description: Project Architecture - Voice AI Platform
+alwaysApply: true
+---
+
+# Project Architecture - Voice AI Platform
+
+## File Structure (Voice AI Platform)
+
+```
+src/
+├── components/           # UI components organized by domain
+│   ├── auth/                         # Authentication components
+│   │   ├── LoginForm.tsx
+│   │   └── CompanySettings.tsx
+│   ├── subjects/                     # Subject management
+│   │   ├── SubjectForm.tsx
+│   │   ├── SubjectTable.tsx
+│   │   ├── BulkImport.tsx
+│   │   └── SubjectFilters.tsx
+│   ├── agents/                       # Agent configuration
+│   │   ├── AgentForm.tsx
+│   │   ├── AgentTable.tsx
+│   │   ├── PersonalitySelector.tsx
+│   │   ├── VoiceSelector.tsx
+│   │   └── StepManager/
+│   │       ├── StepManager.tsx
+│   │       ├── StepForm.tsx
+│   │       └── StepReorder.tsx
+│   ├── calls/                        # Call operations
+│   │   ├── CallManager.tsx
+│   │   ├── CallScheduler.tsx
+│   │   ├── CallHistory.tsx
+│   │   └── LiveCallMonitor.tsx
+│   ├── analytics/                    # Analytics & reporting
+│   │   ├── Dashboard.tsx
+│   │   ├── ConversationHistory.tsx
+│   │   ├── MetricsCards.tsx
+│   │   └── Charts/
+│   │       ├── CallVolumeChart.tsx
+│   │       └── SuccessRateChart.tsx
+│   ├── whitelabel/                   # Branding customization
+│   │   ├── ThemeProvider.tsx
+│   │   ├── LogoUploader.tsx
+│   │   └── ColorPicker.tsx
+│   └── ui/                           # Reusable UI primitives (Radix UI)
+│       ├── button/
+│       ├── dialog/
+│       ├── form/
+│       ├── data-table/
+│       ├── file-upload/
+│       └── charts/
+├── controllers/          # API integration layer
+│   ├── AuthController.ts             # Authentication & company management
+│   ├── SubjectController.ts          # Subject CRUD operations
+│   ├── AgentController.ts            # Agent configuration
+│   ├── CallController.ts             # Call operations & scheduling
+│   └── AnalyticsController.ts        # Analytics & reporting
+├── hooks/               # Custom React hooks
+│   ├── useApiState.ts                # Generic API state management
+│   ├── useWhitelabel.ts              # Theming & branding
+│   ├── useSubjects.ts                # Subject management
+│   ├── useAgents.ts                  # Agent configuration
+│   └── useCallHistory.ts             # Call analytics
+├── lib/                 # External integrations
+│   ├── axios-webservice.ts           # Axios configuration
+│   ├── theme.ts                      # Theme utilities
+│   └── utils.ts                      # General utilities
+├── classes/             # Utility classes
+│   ├── StorageManager.ts             # Local storage management
+│   └── CSVParser.ts                  # CSV import/export
+├── types/               # TypeScript definitions
+│   ├── index.ts                      # All type definitions
+│   ├── auth.types.ts                 # Authentication types
+│   ├── subject.types.ts              # Subject types
+│   ├── agent.types.ts                # Agent types
+│   ├── call.types.ts                 # Call types
+│   ├── analytics.types.ts            # Analytics types
+│   └── env.d.ts                      # Environment variables
+├── utils/               # Utility functions
+│   ├── Routes.ts                     # URL/routing utilities
+│   ├── formatters.ts                 # Data formatting utilities
+│   └── validators.ts                 # Form validation utilities
+├── App.tsx              # Main app component
+└── main.tsx             # App entry point
+```
+
+## Architecture Principles
+
+### 1. Domain-Driven Structure
+
+- **Feature-based organization**: Components grouped by domain (auth, subjects, agents, calls, analytics).
+- **Whitelabel ready**: All components support theming and customization.
+- **Scalable architecture**: Easy to extend with new features and modules.
+- **Single responsibility**: Each component has one clear purpose within its domain.
+
+### 2. Modern Stack
+
+- **React 19 + TypeScript**: Type safety and modern features.
+- **Vite**: Fast development and build process.
+- **Radix UI + Tailwind**: Accessible, customizable UI with excellent data table support.
+- **React Context**: For whitelabel theming and company-wide state.
+
+### 3. Clear Separation of Concerns
+
+- **Components**: Domain-specific UI logic organized by feature.
+- **Hooks**: Reusable stateful logic for data fetching and management.
+- **Controllers**: API communication layer for each domain.
+- **Types**: Strongly typed interfaces for all domains.
+- **Libs/Utils**: External integrations, formatting, and validation helpers.
+
+### 4. Data Management Focus
+
+- **Bulk operations**: Efficient handling of large datasets (subjects, calls).
+- **Real-time updates**: Live call monitoring and analytics.
+- **Export/Import**: CSV support for subject management.
+- **Filtering & Search**: Advanced filtering for all data tables.
+
+## Naming Conventions
+
+### Files and Folders
+
+- **Components**: `PascalCase` (e.g., `FaceLivenessModal.tsx`).
+- **Hooks**: `useCamelCase` (e.g., `useApiState.ts`).
+- **Controllers**: `PascalCase` with `Controller` suffix (e.g., `AuthController.ts`).
+- **Utilities**: `camelCase` (e.g., `routes.ts`).
+- **Types**: `PascalCase` for interfaces/types (e.g., `LoginResponse`).
+
+### Code
+
+- **Variables/Functions**: `camelCase`.
+- **Constants**: `UPPER_CASE_SNAKE` (e.g., `API_TIMEOUT`).
+- **React Components**: `PascalCase`.
+- **CSS Classes (Tailwind)**: `utility-first` (e.g., `flex items-center justify-center`).
+
+## Component Design Priority
+
+1.  **🥇 Radix UI + Tailwind CSS (Primary)**: Build accessible, unstyled components with Radix and style them with Tailwind.
+2.  **🥈 Custom Components (Secondary)**: If Radix doesn't provide a primitive, build a custom component following the same accessibility and composition principles.
+3.  **🥉 Third-Party Libraries (Last Resort)**: Only use if a complex component is absolutely necessary and building it from scratch is not feasible.
+
+## State Management
+
+### Local State (`useState`, `useReducer`)
+
+- **Default choice**: Use for all component-level state. This should cover most use cases.
+- **Example**: Form state, modal visibility.
+
+```typescript
+const [formData, setFormData] = useState({ email: '', password: '' });
+const [isModalOpen, setIsModalOpen] = useState(false);
+```
+
+### Shared State (`useContext`)
+
+- **Use case**: For state that needs to be shared across a component tree without prop drilling.
+- **Keep it simple**: Use context for low-frequency updates. Avoid using it for rapidly changing data.
+- **Principle**: Only introduce shared state when `useState` is not sufficient.
+
+```typescript
+// Example with React Context
+import { createContext, useContext, useState, useMemo } from 'react';
+
+interface AuthContextType {
+isAuthenticated: boolean;
+user: User | null;
+login: (user: User) => void;
+logout: () => void;
+}
+
+const AuthContext = createContext<AuthContextType | null>(null);
+
+export const AuthProvider = ({ children }) => {
+const [user, setUser] = useState<User | null>(null);
+
+    const login = (userData: User) => setUser(userData);
+    const logout = () => setUser(null);
+
+    const value = useMemo(() => ({
+        isAuthenticated: !!user,
+        user,
+        login,
+        logout,
+    }), [user]);
+
+    return (
+        <AuthContext.Provider value={value}>
+            {children}
+        </AuthContext.Provider>
+    );
+
+};
+
+export const useAuth = () => {
+const context = useContext(AuthContext);
+if (!context) {
+throw new Error('useAuth must be used within an AuthProvider');
+}
+return context;
+};
+```
+
+## Environment Configuration
+
+### Vite Environment Variables
+
+- **File**: `.env.local` for local development (do not commit).
+- **Access**: `import.meta.env.VARIABLE_NAME`.
+
+```
+
+# .env
+
+# API Configuration
+VITE_API_BASE_URL="http://localhost:8080/api"
+
+# Voice AI Services
+VITE_VOICE_SERVICE_URL="https://voice-ai-api.example.com"
+VITE_LLM_SERVICE_URL="https://llm-api.example.com"
+
+# File Upload
+VITE_MAX_FILE_SIZE_MB=10
+VITE_ALLOWED_FILE_TYPES="csv,xlsx"
+
+# Real-time Features
+VITE_WEBSOCKET_URL="ws://localhost:8080/ws"
+
+# Analytics
+VITE_ANALYTICS_ENABLED=true
+```
+
+## Key Functional Modules
+
+Based on the hackathon requirements, the platform implements these core modules:
+
+### 1. Authentication & Company Management (RF-EMPRESA)
+- User registration and login
+- Company profile management (logo, colors, whitelabel)
+- Role-based access control (Admin, Operator, Visualizer)
+
+### 2. Subject Management (RF-SUJEITO)
+- Manual subject registration (name, phone)
+- Bulk CSV import/export
+- Subject listing, editing, and deletion
+- Advanced filtering and search
+
+### 3. Agent Configuration (RF-AGENTE)
+- Agent creation with objectives
+- Personality selection (Friendly, Formal, Persuasive)
+- Voice selection (Male, Female options)
+- Conversation flow step management (1-10 steps)
+- Step reordering and deletion
+
+### 4. Call Operations (RF-CALL)
+- Individual call initiation
+- Bulk call scheduling
+- Live call monitoring
+- Call status tracking
+
+### 5. Analytics & Reporting (RF-ANALISE)
+- Conversation history and transcriptions
+- Success metrics and KPIs
+- Sentiment analysis integration
+- Performance dashboards
+- Step-by-step analysis
