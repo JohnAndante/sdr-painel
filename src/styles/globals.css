@@ -1,0 +1,664 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* Custom Color Palette - Light Theme */
+  --md-sys-color-primary: #38B068;
+  --md-sys-color-on-primary: #FFFFFF;
+  --md-sys-color-primary-container: #1F793D;
+  --md-sys-color-on-primary-container: #FFFFFF;
+
+  --md-sys-color-secondary: #2407F9;
+  --md-sys-color-on-secondary: #FFFFFF;
+  --md-sys-color-secondary-container: #48C398;
+  --md-sys-color-on-secondary-container: #FFFFFF;
+
+  --md-sys-color-tertiary: #81BECD;
+  --md-sys-color-on-tertiary: #01141F;
+  --md-sys-color-tertiary-container: #658CA7;
+  --md-sys-color-on-tertiary-container: #FFFFFF;
+
+  --md-sys-color-error: #FF5449;
+  --md-sys-color-on-error: #FFFFFF;
+  --md-sys-color-error-container: #FFEBE9;
+  --md-sys-color-on-error-container: #410002;
+
+  --md-sys-color-surface: #FFFFFF;
+  --md-sys-color-on-surface: #01141F;
+  --md-sys-color-surface-variant: #F8F9FA;
+  --md-sys-color-on-surface-variant: #465E6A;
+  --md-sys-color-surface-container-highest: #F1F3F4;
+  --md-sys-color-surface-container-high: #F8F9FA;
+  --md-sys-color-surface-container: #FAFBFB;
+  --md-sys-color-surface-container-low: #FEFEFE;
+  --md-sys-color-surface-container-lowest: #FFFFFF;
+
+  --md-sys-color-outline: #658CA7;
+  --md-sys-color-outline-variant: #81BECD;
+  --md-sys-color-background: #FFFFFF;
+  --md-sys-color-on-background: #01141F;
+  --md-sys-color-inverse-surface: #1C2934;
+  --md-sys-color-inverse-on-surface: #FFFFFF;
+  --md-sys-color-inverse-primary: #48C398;
+  --md-sys-color-scrim: #000000;
+  --md-sys-color-shadow: #000000;
+
+  /* Custom gradients */
+  --gradient-primary: linear-gradient(135deg, #1F793D 0%, #78C318 100%);
+  --gradient-secondary: linear-gradient(135deg, #48C398 0%, #2407F9 100%);
+  --gradient-surface: linear-gradient(135deg, #214055 0%, #465E6A 100%);
+
+  /* MD3 Shape */
+  --md-sys-shape-corner-none: 0px;
+  --md-sys-shape-corner-extra-small: 4px;
+  --md-sys-shape-corner-small: 8px;
+  --md-sys-shape-corner-medium: 12px;
+  --md-sys-shape-corner-large: 16px;
+  --md-sys-shape-corner-extra-large: 28px;
+  --md-sys-shape-corner-full: 50%;
+
+  /* MD3 Elevation */
+  --md-sys-elevation-level0: none;
+  --md-sys-elevation-level1: 0px 1px 2px 0px rgba(1, 20, 31, 0.3), 0px 1px 3px 1px rgba(1, 20, 31, 0.15);
+  --md-sys-elevation-level2: 0px 1px 2px 0px rgba(1, 20, 31, 0.3), 0px 2px 6px 2px rgba(1, 20, 31, 0.15);
+  --md-sys-elevation-level3: 0px 1px 3px 0px rgba(1, 20, 31, 0.3), 0px 4px 8px 3px rgba(1, 20, 31, 0.15);
+  --md-sys-elevation-level4: 0px 2px 3px 0px rgba(1, 20, 31, 0.3), 0px 6px 10px 4px rgba(1, 20, 31, 0.15);
+  --md-sys-elevation-level5: 0px 4px 4px 0px rgba(1, 20, 31, 0.3), 0px 8px 12px 6px rgba(1, 20, 31, 0.15);
+
+  /* MD3 Motion */
+  --md-sys-motion-duration-short1: 50ms;
+  --md-sys-motion-duration-short2: 100ms;
+  --md-sys-motion-duration-short3: 150ms;
+  --md-sys-motion-duration-short4: 200ms;
+  --md-sys-motion-duration-medium1: 250ms;
+  --md-sys-motion-duration-medium2: 300ms;
+  --md-sys-motion-duration-medium3: 350ms;
+  --md-sys-motion-duration-medium4: 400ms;
+  --md-sys-motion-easing-standard: cubic-bezier(0.2, 0, 0, 1);
+  --md-sys-motion-easing-emphasized: cubic-bezier(0.2, 0, 0, 1);
+
+  /* MD3 State Layers */
+  --md-sys-state-hover-opacity: 0.08;
+  --md-sys-state-focus-opacity: 0.12;
+  --md-sys-state-pressed-opacity: 0.12;
+  --md-sys-state-disabled-content-opacity: 0.38;
+  --md-sys-state-disabled-container-opacity: 0.12;
+
+  /* Legacy variables for Tailwind compatibility */
+  --background: var(--md-sys-color-background);
+  --foreground: var(--md-sys-color-on-background);
+  --card: var(--md-sys-color-surface-container-low);
+  --card-foreground: var(--md-sys-color-on-surface);
+  --popover: var(--md-sys-color-surface-container);
+  --popover-foreground: var(--md-sys-color-on-surface);
+  --primary: var(--md-sys-color-primary);
+  --primary-foreground: var(--md-sys-color-on-primary);
+  --secondary: var(--md-sys-color-secondary-container);
+  --secondary-foreground: var(--md-sys-color-on-secondary-container);
+  --muted: var(--md-sys-color-surface-variant);
+  --muted-foreground: var(--md-sys-color-on-surface-variant);
+  --accent: var(--md-sys-color-tertiary-container);
+  --accent-foreground: var(--md-sys-color-on-tertiary-container);
+  --destructive: var(--md-sys-color-error);
+  --destructive-foreground: var(--md-sys-color-on-error);
+  --border: var(--md-sys-color-outline-variant);
+  --input: var(--md-sys-color-surface-variant);
+  --ring: var(--md-sys-color-primary);
+  --radius: var(--md-sys-shape-corner-medium);
+
+  /* Layout variables */
+  --sidebar-width: 360px;
+  --sidebar-collapsed-width: 80px;
+  --topbar-height: 64px;
+  --content-padding: 24px;
+  --content-max-width: 1440px;
+
+  /* Responsive spacing based on 4px grid */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 48px;
+}
+
+.dark {
+  /* Custom Color Palette - Dark Theme */
+  --md-sys-color-primary: #48C398;
+  --md-sys-color-on-primary: #01141F;
+  --md-sys-color-primary-container: #38B068;
+  --md-sys-color-on-primary-container: #FFFFFF;
+
+  --md-sys-color-secondary: #81BECD;
+  --md-sys-color-on-secondary: #01141F;
+  --md-sys-color-secondary-container: #2407F9;
+  --md-sys-color-on-secondary-container: #FFFFFF;
+
+  --md-sys-color-tertiary: #658CA7;
+  --md-sys-color-on-tertiary: #FFFFFF;
+  --md-sys-color-tertiary-container: #465E6A;
+  --md-sys-color-on-tertiary-container: #81BECD;
+
+  --md-sys-color-error: #FFB4AB;
+  --md-sys-color-on-error: #690005;
+  --md-sys-color-error-container: #93000A;
+  --md-sys-color-on-error-container: #FFDAD6;
+
+  --md-sys-color-surface: #01141F;
+  --md-sys-color-on-surface: #FFFFFF;
+  --md-sys-color-surface-variant: #1C2934;
+  --md-sys-color-on-surface-variant: #81BECD;
+  --md-sys-color-surface-container-highest: #465E6A;
+  --md-sys-color-surface-container-high: #214055;
+  --md-sys-color-surface-container: #1C2934;
+  --md-sys-color-surface-container-low: #01141F;
+  --md-sys-color-surface-container-lowest: #000000;
+
+  --md-sys-color-outline: #658CA7;
+  --md-sys-color-outline-variant: #465E6A;
+  --md-sys-color-background: #01141F;
+  --md-sys-color-on-background: #FFFFFF;
+  --md-sys-color-inverse-surface: #FFFFFF;
+  --md-sys-color-inverse-on-surface: #01141F;
+  --md-sys-color-inverse-primary: #38B068;
+
+  /* Update legacy variables for dark theme */
+  --background: var(--md-sys-color-background);
+  --foreground: var(--md-sys-color-on-background);
+  --card: var(--md-sys-color-surface-container-low);
+  --card-foreground: var(--md-sys-color-on-surface);
+  --popover: var(--md-sys-color-surface-container);
+  --popover-foreground: var(--md-sys-color-on-surface);
+  --primary: var(--md-sys-color-primary);
+  --primary-foreground: var(--md-sys-color-on-primary);
+  --secondary: var(--md-sys-color-secondary-container);
+  --secondary-foreground: var(--md-sys-color-on-secondary-container);
+  --muted: var(--md-sys-color-surface-variant);
+  --muted-foreground: var(--md-sys-color-on-surface-variant);
+  --accent: var(--md-sys-color-tertiary-container);
+  --accent-foreground: var(--md-sys-color-on-tertiary-container);
+  --destructive: var(--md-sys-color-error);
+  --destructive-foreground: var(--md-sys-color-on-error);
+  --border: var(--md-sys-color-outline-variant);
+  --input: var(--md-sys-color-surface-variant);
+  --ring: var(--md-sys-color-primary);
+}
+
+/* Mobile-first responsive adjustments */
+@media (max-width: 768px) {
+  :root {
+    --content-padding: 16px;
+    --sidebar-width: 320px;
+  }
+}
+
+@media (max-width: 640px) {
+  :root {
+    --content-padding: 12px;
+    --spacing-lg: 16px;
+    --spacing-xl: 24px;
+  }
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* Custom chart colors using new palette */
+  --color-chart-1: var(--md-sys-color-primary);
+  --color-chart-2: var(--md-sys-color-secondary);
+  --color-chart-3: var(--md-sys-color-tertiary);
+  --color-chart-4: var(--md-sys-color-error);
+  --color-chart-5: var(--md-sys-color-outline);
+
+  /* MD3 Shape system */
+  --radius-sm: var(--md-sys-shape-corner-extra-small);
+  --radius-md: var(--md-sys-shape-corner-small);
+  --radius-lg: var(--md-sys-shape-corner-medium);
+  --radius-xl: var(--md-sys-shape-corner-large);
+
+  /* Custom gradient utilities */
+  --gradient-primary: var(--gradient-primary);
+  --gradient-secondary: var(--gradient-secondary);
+  --gradient-surface: var(--gradient-surface);
+
+  /* MD3 specific classes with custom colors */
+  --color-md-primary: var(--md-sys-color-primary);
+  --color-md-on-primary: var(--md-sys-color-on-primary);
+  --color-md-primary-container: var(--md-sys-color-primary-container);
+  --color-md-on-primary-container: var(--md-sys-color-on-primary-container);
+  --color-md-surface: var(--md-sys-color-surface);
+  --color-md-on-surface: var(--md-sys-color-on-surface);
+  --color-md-surface-variant: var(--md-sys-color-surface-variant);
+  --color-md-on-surface-variant: var(--md-sys-color-on-surface-variant);
+  --color-md-outline: var(--md-sys-color-outline);
+  --color-md-outline-variant: var(--md-sys-color-outline-variant);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    font-family: 'Poppins', sans-serif;
+    font-size: 16px;
+    overflow-x: hidden;
+    font-feature-settings: 'liga' 1, 'calt' 1, 'kern' 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    overflow-x: hidden;
+    min-height: 100vh;
+    min-height: 100dvh;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Ensure all containers are responsive */
+  .container {
+    width: 100%;
+    max-width: var(--content-max-width);
+    margin: 0 auto;
+    padding-left: var(--content-padding);
+    padding-right: var(--content-padding);
+  }
+
+  /* MD3 Typography Scale Classes with Poppins */
+  .md3-display-large {
+    font-family: 'Poppins', sans-serif;
+    font-size: 57px;
+    font-weight: 400;
+    line-height: 64px;
+    letter-spacing: -0.25px;
+  }
+
+  .md3-display-medium {
+    font-family: 'Poppins', sans-serif;
+    font-size: 45px;
+    font-weight: 400;
+    line-height: 52px;
+    letter-spacing: 0px;
+  }
+
+  .md3-display-small {
+    font-family: 'Poppins', sans-serif;
+    font-size: 36px;
+    font-weight: 400;
+    line-height: 44px;
+    letter-spacing: 0px;
+  }
+
+  .md3-headline-large {
+    font-family: 'Poppins', sans-serif;
+    font-size: 32px;
+    font-weight: 500;
+    line-height: 40px;
+    letter-spacing: 0px;
+  }
+
+  .md3-headline-medium {
+    font-family: 'Poppins', sans-serif;
+    font-size: 28px;
+    font-weight: 500;
+    line-height: 36px;
+    letter-spacing: 0px;
+  }
+
+  .md3-headline-small {
+    font-family: 'Poppins', sans-serif;
+    font-size: 24px;
+    font-weight: 500;
+    line-height: 32px;
+    letter-spacing: 0px;
+  }
+
+  .md3-title-large {
+    font-family: 'Poppins', sans-serif;
+    font-size: 22px;
+    font-weight: 500;
+    line-height: 28px;
+    letter-spacing: 0px;
+  }
+
+  .md3-title-medium {
+    font-family: 'Poppins', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 24px;
+    letter-spacing: 0.15px;
+  }
+
+  .md3-title-small {
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 20px;
+    letter-spacing: 0.1px;
+  }
+
+  .md3-body-large {
+    font-family: 'Poppins', sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 24px;
+    letter-spacing: 0.5px;
+  }
+
+  .md3-body-medium {
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 20px;
+    letter-spacing: 0.25px;
+  }
+
+  .md3-body-small {
+    font-family: 'Poppins', sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 16px;
+    letter-spacing: 0.4px;
+  }
+
+  .md3-label-large {
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 20px;
+    letter-spacing: 0.1px;
+  }
+
+  .md3-label-medium {
+    font-family: 'Poppins', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 16px;
+    letter-spacing: 0.5px;
+  }
+
+  .md3-label-small {
+    font-family: 'Poppins', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 16px;
+    letter-spacing: 0.5px;
+  }
+
+  /* MD3 Elevation Classes with custom shadows */
+  .md3-elevation-0 {
+    box-shadow: var(--md-sys-elevation-level0);
+  }
+
+  .md3-elevation-1 {
+    box-shadow: var(--md-sys-elevation-level1);
+  }
+
+  .md3-elevation-2 {
+    box-shadow: var(--md-sys-elevation-level2);
+  }
+
+  .md3-elevation-3 {
+    box-shadow: var(--md-sys-elevation-level3);
+  }
+
+  .md3-elevation-4 {
+    box-shadow: var(--md-sys-elevation-level4);
+  }
+
+  .md3-elevation-5 {
+    box-shadow: var(--md-sys-elevation-level5);
+  }
+
+  /* MD3 State Layer Utilities */
+  .md3-state-layer {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .md3-state-layer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: currentColor;
+    opacity: 0;
+    transition: opacity var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard);
+    pointer-events: none;
+  }
+
+  .md3-state-layer:hover::before {
+    opacity: var(--md-sys-state-hover-opacity);
+  }
+
+  .md3-state-layer:focus-visible::before {
+    opacity: var(--md-sys-state-focus-opacity);
+  }
+
+  .md3-state-layer:active::before {
+    opacity: var(--md-sys-state-pressed-opacity);
+  }
+
+  /* Custom gradient utilities */
+  .gradient-primary {
+    background: var(--gradient-primary);
+  }
+
+  .gradient-secondary {
+    background: var(--gradient-secondary);
+  }
+
+  .gradient-surface {
+    background: var(--gradient-surface);
+  }
+
+  /* Responsive grid utilities following 4px base */
+  .md3-grid {
+    display: grid;
+    gap: var(--spacing-md);
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 640px) {
+    .md3-grid.cols-2 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 768px) {
+    .md3-grid.cols-3 {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .md3-grid.cols-4 {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    .md3-grid.cols-5 {
+      grid-template-columns: repeat(5, 1fr);
+    }
+  }
+
+  /* Default typography following Poppins - Using direct CSS properties */
+  h1 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 32px;
+    font-weight: 500;
+    line-height: 40px;
+    letter-spacing: 0px;
+    color: var(--md-sys-color-on-surface);
+  }
+
+  h2 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 28px;
+    font-weight: 500;
+    line-height: 36px;
+    letter-spacing: 0px;
+    color: var(--md-sys-color-on-surface);
+  }
+
+  h3 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 24px;
+    font-weight: 500;
+    line-height: 32px;
+    letter-spacing: 0px;
+    color: var(--md-sys-color-on-surface);
+  }
+
+  h4 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 22px;
+    font-weight: 500;
+    line-height: 28px;
+    letter-spacing: 0px;
+    color: var(--md-sys-color-on-surface);
+  }
+
+  h5 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 24px;
+    letter-spacing: 0.15px;
+    color: var(--md-sys-color-on-surface);
+  }
+
+  h6 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 20px;
+    letter-spacing: 0.1px;
+    color: var(--md-sys-color-on-surface);
+  }
+
+  p {
+    font-family: 'Poppins', sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 24px;
+    letter-spacing: 0.5px;
+    color: var(--md-sys-color-on-surface);
+  }
+
+  label {
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 20px;
+    letter-spacing: 0.1px;
+    color: var(--md-sys-color-on-surface);
+  }
+
+  button {
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 20px;
+    letter-spacing: 0.1px;
+  }
+
+  input,
+  textarea,
+  select {
+    font-family: 'Poppins', sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 24px;
+    letter-spacing: 0.5px;
+  }
+
+  small {
+    font-family: 'Poppins', sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 16px;
+    letter-spacing: 0.4px;
+    color: var(--md-sys-color-on-surface-variant);
+  }
+}
+
+/* Mobile-specific improvements following MD3 */
+@media (max-width: 768px) {
+
+  /* Ensure touch targets are large enough (48dp minimum) */
+  button,
+  input,
+  select,
+  textarea,
+  [role="button"] {
+    min-height: 48px;
+    min-width: 48px;
+  }
+
+  /* Better mobile spacing */
+  .mobile-spacing>*+* {
+    margin-top: var(--spacing-md);
+  }
+
+  /* Better mobile form layouts */
+  .form-group {
+    margin-bottom: var(--spacing-lg);
+  }
+}
+
+/* Print styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  body {
+    background: white !important;
+    color: black !important;
+  }
+}
+
+/* Focus ring using custom primary color */
+:focus-visible {
+  outline: 2px solid var(--md-sys-color-primary);
+  outline-offset: 2px;
+}
+
+/* Animation classes following MD3 */
+.md3-transition-standard {
+  transition: all var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard);
+}
+
+.md3-transition-emphasized {
+  transition: all var(--md-sys-motion-duration-medium4) var(--md-sys-motion-easing-emphasized);
+}

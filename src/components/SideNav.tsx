@@ -1,0 +1,180 @@
+'use client'
+
+import React from 'react'
+import { Button } from './ui/button'
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from './ui/sheet'
+import { 
+  LayoutDashboard, 
+  Users, 
+  RotateCcw, 
+  Settings,
+  LogOut,
+  User
+} from 'lucide-react'
+import { cn } from './ui/utils'
+import { User as UserType } from '../types'
+
+interface SideNavProps {
+  mode: 'expanded' | 'collapsed' | 'drawer'
+  theme: 'light' | 'dark'
+  selectedItem: string
+  currentUser: UserType
+  onItemClick: (item: string) => void
+  onClose?: () => void
+  open?: boolean
+}
+
+export default function SideNav({
+  mode,
+  theme,
+  selectedItem,
+  currentUser,
+  onItemClick,
+  onClose,
+  open = false
+}: SideNavProps) {
+  
+  const menuItems = [
+    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { id: 'agentes', label: 'Agentes', icon: Users },
+    { id: 'rotinas', label: 'Rotinas', icon: RotateCcw },
+    { id: 'usuarios', label: 'Usuários', icon: Settings },
+  ]
+
+  const handleItemClick = (itemId: string) => {
+    onItemClick(itemId)
+    if (mode === 'drawer' && onClose) {
+      onClose()
+    }
+  }
+
+  const NavigationItem = ({ 
+    item, 
+    isSelected, 
+    showLabel 
+  }: { 
+    item: typeof menuItems[0], 
+    isSelected: boolean, 
+    showLabel: boolean 
+  }) => {
+    const Icon = item.icon
+    
+    return (
+      <Button
+        variant="ghost"
+        onClick={() => handleItemClick(item.id)}
+        className={cn(
+          // MD3 Navigation List Item
+          "w-full justify-start gap-3 h-14 px-4 rounded-full md3-state-layer",
+          "transition-all duration-200",
+          showLabel ? "pr-6" : "w-14 px-0 justify-center",
+          isSelected 
+            ? "bg-secondary-container text-on-secondary-container hover:bg-secondary-container/90" 
+            : "text-on-surface-variant hover:bg-on-surface/8 active:bg-on-surface/12"
+        )}
+      >
+        <Icon className={cn(
+          "h-6 w-6 flex-shrink-0",
+          isSelected ? "text-on-secondary-container" : "text-on-surface-variant"
+        )} />
+        {showLabel && (
+          <span className={cn(
+            "md3-label-large font-medium",
+            isSelected ? "text-on-secondary-container" : "text-on-surface-variant"
+          )}>
+            {item.label}
+          </span>
+        )}
+      </Button>
+    )
+  }
+
+  const NavigationContent = ({ showLabels }: { showLabels: boolean }) => (
+    <div className="flex flex-col h-full">
+      {/* Header */}
+      {showLabels && (
+        <div className="px-4 py-6 border-b border-outline-variant">
+          <h2 className="md3-title-medium text-on-surface font-medium">
+            Gerson
+          </h2>
+          <p className="md3-body-small text-on-surface-variant mt-1">
+            Call Center IA
+          </p>
+        </div>
+      )}
+
+      {/* Navigation Items */}
+      <nav className="flex-1 p-3">
+        <div className="space-y-1">
+          {menuItems.map((item) => (
+            <NavigationItem
+              key={item.id}
+              item={item}
+              isSelected={selectedItem === item.id}
+              showLabel={showLabels}
+            />
+          ))}
+        </div>
+      </nav>
+
+      {/* User Section */}
+      {showLabels && (
+        <div className="border-t border-outline-variant p-3">
+          <div className="flex items-center gap-3 px-4 py-3 rounded-lg bg-surface-variant">
+            <div className="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center">
+              <User className="h-4 w-4" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="md3-body-medium text-on-surface font-medium truncate">
+                {currentUser.name}
+              </p>
+              <p className="md3-body-small text-on-surface-variant truncate">
+                {currentUser.role === 'admin' ? 'Administrador' : 'Usuário'}
+              </p>
+            </div>
+          </div>
+          
+          <Button
+            variant="ghost"
+            onClick={() => handleItemClick('logout')}
+            className={cn(
+              "w-full justify-start gap-3 h-12 mt-2 px-4 rounded-full",
+              "text-error hover:bg-error/8 active:bg-error/12"
+            )}
+          >
+            <LogOut className="h-5 w-5" />
+            <span className="md3-label-large">Sair</span>
+          </Button>
+        </div>
+      )}
+    </div>
+  )
+
+  // Mobile Drawer
+  if (mode === 'drawer') {
+    return (
+      <Sheet open={open} onOpenChange={onClose}>
+        <SheetContent 
+          side="left" 
+          className={cn(
+            "w-80 p-0 bg-surface border-r border-outline-variant",
+            "md3-elevation-1"
+          )}
+        >
+          <NavigationContent showLabels={true} />
+        </SheetContent>
+      </Sheet>
+    )
+  }
+
+  // Desktop Navigation Rail/Drawer
+  return (
+    <aside className={cn(
+      "h-full bg-surface border-r border-outline-variant transition-all duration-300",
+      "md3-elevation-0",
+      mode === 'expanded' ? "w-80" : "w-20"
+    )}>
+      <NavigationContent showLabels={mode === 'expanded'} />
+    </aside>
+  )
+}
