@@ -1,9 +1,7 @@
 "use client";
-
-import React from "react";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { LoadingScreen } from "./components/LoadingScreen";
-import { ThemeControls } from "./components/ThemeControls";
+
 import { ResponsiveLayout } from "./components/ResponsiveLayout";
 import AuthWrapper from "./components/AuthWrapper";
 import AgenteForm from "./components/AgenteForm";
@@ -26,20 +24,11 @@ export default function App() {
   if (!auth.isAuthenticated) {
     return (
       <ErrorBoundary>
-        <div className="relative min-h-screen w-full">
-          <ThemeControls
-            darkMode={theme.darkMode}
-            isMobile={theme.isMobile}
-            onToggleDarkMode={theme.toggleDarkMode}
-            onToggleMobile={theme.toggleMobileDemo}
-          />
-
-          <AuthWrapper
-            darkMode={theme.darkMode}
-            isMobile={theme.isMobile}
-            onAuthSuccess={auth.login}
-          />
-        </div>
+        <AuthWrapper
+          darkMode={theme.darkMode}
+          isMobile={theme.isMobile}
+          onAuthSuccess={auth.login}
+        />
       </ErrorBoundary>
     );
   }
@@ -48,13 +37,6 @@ export default function App() {
   return (
     <ErrorBoundary>
       <div className="relative min-h-screen w-full">
-        <ThemeControls
-          darkMode={theme.darkMode}
-          isMobile={theme.isMobile}
-          onToggleDarkMode={theme.toggleDarkMode}
-          onToggleMobile={theme.toggleMobileDemo}
-        />
-
         <ResponsiveLayout
           darkMode={theme.darkMode}
           isMobile={theme.isMobile}
@@ -63,6 +45,8 @@ export default function App() {
           currentUser={auth.currentUser!}
           onNavigate={appState.navigateTo}
           appState={appState}
+          onToggleDarkMode={theme.toggleDarkMode}
+          onToggleMobile={theme.toggleMobileDemo}
         />
 
         {/* Agent Form Dialog */}

@@ -1,10 +1,8 @@
 'use client'
-
-import React from 'react'
 import { Button } from './ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import { Menu, LogOut, User } from 'lucide-react'
-import { 
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -13,6 +11,7 @@ import {
 } from './ui/dropdown-menu'
 import { User as UserType } from '../types'
 import { cn } from './ui/utils'
+import { ThemeControls } from './ThemeControls'
 
 interface TopBarProps {
   darkMode: boolean
@@ -20,6 +19,8 @@ interface TopBarProps {
   currentUser: UserType
   onMenuToggle: () => void
   onNavigate: (page: string) => void
+  onToggleDarkMode: () => void
+  onToggleMobile: () => void
 }
 
 export default function TopBar({
@@ -27,7 +28,9 @@ export default function TopBar({
   isMobile,
   currentUser,
   onMenuToggle,
-  onNavigate
+  onNavigate,
+  onToggleDarkMode,
+  onToggleMobile
 }: TopBarProps) {
   const getUserInitials = (name: string) => {
     return name
@@ -39,7 +42,7 @@ export default function TopBar({
   }
 
   return (
-    <header 
+    <header
       className={cn(
         // Custom Top App Bar with new colors
         "flex items-center justify-between",
@@ -77,12 +80,22 @@ export default function TopBar({
         </div>
       </div>
 
-      {/* Right Section - User Menu */}
-      <div className="flex items-center gap-2">
+      {/* Right Section - Theme Controls + User Menu */}
+      <div className="flex items-center gap-3">
+        {/* Theme Controls */}
+        <ThemeControls
+          darkMode={darkMode}
+          isMobile={isMobile}
+          onToggleDarkMode={onToggleDarkMode}
+          onToggleMobile={onToggleMobile}
+        />
+
+        {/* Separator */}
+        <div className="h-6 w-px bg-[--md-sys-color-outline-variant]" />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               className={cn(
                 "relative h-12 w-auto px-3 md3-state-layer",
                 "hover:bg-[--md-sys-color-on-surface]/8 active:bg-[--md-sys-color-on-surface]/12",
@@ -99,7 +112,7 @@ export default function TopBar({
                     {getUserInitials(currentUser.name)}
                   </AvatarFallback>
                 </Avatar>
-                
+
                 {/* User name - Hidden on small screens */}
                 <div className="hidden md:flex flex-col items-start text-left">
                   <span className="md3-label-large text-[--md-sys-color-on-surface] font-semibold">
@@ -112,9 +125,9 @@ export default function TopBar({
               </div>
             </Button>
           </DropdownMenuTrigger>
-          
-          <DropdownMenuContent 
-            align="end" 
+
+          <DropdownMenuContent
+            align="end"
             className={cn(
               "w-56 md3-elevation-2",
               "bg-[--md-sys-color-surface-container] rounded-xl",
@@ -131,9 +144,9 @@ export default function TopBar({
                 {currentUser.email}
               </p>
             </div>
-            
+
             {/* Menu Items - Custom styling */}
-            <DropdownMenuItem 
+            <DropdownMenuItem
               onClick={() => onNavigate('profile')}
               className={cn(
                 "gap-3 px-3 py-3 cursor-pointer",
@@ -144,10 +157,10 @@ export default function TopBar({
               <User className="h-5 w-5 text-[--md-sys-color-on-surface-variant]" />
               <span className="md3-label-large text-[--md-sys-color-on-surface] font-semibold">Perfil</span>
             </DropdownMenuItem>
-            
+
             <DropdownMenuSeparator className="bg-[--md-sys-color-outline-variant]" />
-            
-            <DropdownMenuItem 
+
+            <DropdownMenuItem
               onClick={() => onNavigate('logout')}
               className={cn(
                 "gap-3 px-3 py-3 cursor-pointer",

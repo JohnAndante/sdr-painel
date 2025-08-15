@@ -12,6 +12,8 @@ interface AppShellProps {
   currentPage: PageId
   currentUser: User
   onNavigate: (page: string) => void
+  onToggleDarkMode: () => void
+  onToggleMobile: () => void
 }
 
 export default function AppShell({
@@ -20,7 +22,9 @@ export default function AppShell({
   isMobile,
   currentPage,
   currentUser,
-  onNavigate
+  onNavigate,
+  onToggleDarkMode,
+  onToggleMobile
 }: AppShellProps) {
   const [sideNavOpen, setSideNavOpen] = useState(false)
 
@@ -76,6 +80,8 @@ export default function AppShell({
           currentUser={currentUser}
           onMenuToggle={handleMenuToggle}
           onNavigate={onNavigate}
+          onToggleDarkMode={onToggleDarkMode}
+          onToggleMobile={onToggleMobile}
         />
 
         {/* Page Content */}

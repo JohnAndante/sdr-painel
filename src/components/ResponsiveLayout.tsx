@@ -1,4 +1,4 @@
-import React from 'react';
+
 import AppShell from './AppShell';
 import { PageRenderer } from './PageRenderer';
 import { User, PageId } from '../types';
@@ -12,31 +12,34 @@ interface ResponsiveLayoutProps {
   currentUser: User;
   onNavigate: (page: string) => void;
   appState: ReturnType<typeof useAppState>;
+  onToggleDarkMode: () => void;
+  onToggleMobile: () => void;
 }
 
 export function ResponsiveLayout({
   darkMode,
   isMobile,
-  isTablet,
   currentPage,
   currentUser,
   onNavigate,
   appState,
+  onToggleDarkMode,
+  onToggleMobile,
 }: ResponsiveLayoutProps) {
   return (
-    <div 
+    <div
       className={`
         min-h-screen w-full bg-background
         ${darkMode ? 'dark' : ''}
       `}
-      style={{ 
+      style={{
         fontFamily: "Roboto Flex, Roboto, sans-serif",
       }}
     >
       {/* Debug info - remove in production */}
-      <div className="fixed top-4 left-4 z-50 bg-black/80 text-white px-3 py-2 rounded text-xs no-print">
+      {/* <div className="fixed top-4 left-4 z-50 bg-black/80 text-white px-3 py-2 rounded text-xs no-print">
         {isMobile ? 'Mobile' : isTablet ? 'Tablet' : 'Desktop'} | {darkMode ? 'Dark' : 'Light'} | {currentUser.name}
-      </div>
+      </div> */}
 
       <AppShell
         darkMode={darkMode}
@@ -44,6 +47,8 @@ export function ResponsiveLayout({
         currentPage={currentPage}
         currentUser={currentUser}
         onNavigate={onNavigate}
+        onToggleDarkMode={onToggleDarkMode}
+        onToggleMobile={onToggleMobile}
       >
         <PageRenderer
           currentPage={currentPage}
