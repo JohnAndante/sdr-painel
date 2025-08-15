@@ -175,3 +175,65 @@ export interface AppContextType {
   isMobile: boolean;
   setIsMobile: (mobile: boolean) => void;
 }
+
+// =============================================================================
+// Re-export API types for compatibility
+// =============================================================================
+export type {
+  // Base
+  BaseEntity,
+  
+  // Company & Users
+  Company,
+  CompanyRequest,
+  User as ApiUser,
+  UserRequest,
+  Auth,
+  AuthRequest,
+  LoginResponse,
+  
+  // Agents
+  Agent as ApiAgent,
+  AgentRequest,
+  AgentStep,
+  
+  // Customers
+  Customer,
+  CustomerRequest,
+  BulkCustomerImport,
+  BulkImportResult,
+  
+  // Routines
+  Routine as ApiRoutine,
+  RoutineRequest,
+  AgentHasRoutine,
+  
+  // Calls
+  Call as ApiCall,
+  CallRequest,
+  BulkCallRequest,
+  CallResult,
+  
+  // Analytics
+  CallAnalytics,
+  AgentPerformance,
+  RoutineAnalytics,
+  
+  // API
+  ApiResponse,
+  PaginatedResponse,
+  ApiError,
+  
+  // Filters
+  CustomerFilters,
+  CallFilters,
+  AgentFilters,
+  RoutineFilters,
+  
+  // Config
+  Config,
+  
+  // Events
+  CallEvent,
+  AgentEvent,
+} from './api.types';
