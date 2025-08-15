@@ -68,16 +68,6 @@ export default function TopBar({
             <Menu className="h-6 w-6" />
           </Button>
         )}
-
-        {/* App Title - Poppins Typography */}
-        <div className="hidden sm:block">
-          <h1 className="md3-title-large text-[--md-sys-color-on-surface] font-semibold">
-            Gerson
-          </h1>
-          <p className="md3-body-small text-[--md-sys-color-on-surface-variant] mt-[-2px]">
-            Call Center IA
-          </p>
-        </div>
       </div>
 
       {/* Right Section - Theme Controls + User Menu */}

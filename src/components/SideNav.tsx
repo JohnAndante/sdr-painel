@@ -3,10 +3,10 @@
 import React from 'react'
 import { Button } from './ui/button'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from './ui/sheet'
-import { 
-  LayoutDashboard, 
-  Users, 
-  RotateCcw, 
+import {
+  LayoutDashboard,
+  Users,
+  RotateCcw,
   Settings,
   LogOut,
   User
@@ -33,7 +33,7 @@ export default function SideNav({
   onClose,
   open = false
 }: SideNavProps) {
-  
+
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'agentes', label: 'Agentes', icon: Users },
@@ -48,17 +48,17 @@ export default function SideNav({
     }
   }
 
-  const NavigationItem = ({ 
-    item, 
-    isSelected, 
-    showLabel 
-  }: { 
-    item: typeof menuItems[0], 
-    isSelected: boolean, 
-    showLabel: boolean 
+  const NavigationItem = ({
+    item,
+    isSelected,
+    showLabel
+  }: {
+    item: typeof menuItems[0],
+    isSelected: boolean,
+    showLabel: boolean
   }) => {
     const Icon = item.icon
-    
+
     return (
       <Button
         variant="ghost"
@@ -68,8 +68,8 @@ export default function SideNav({
           "w-full justify-start gap-3 h-14 px-4 rounded-full md3-state-layer",
           "transition-all duration-200",
           showLabel ? "pr-6" : "w-14 px-0 justify-center",
-          isSelected 
-            ? "bg-secondary-container text-on-secondary-container hover:bg-secondary-container/90" 
+          isSelected
+            ? "bg-secondary-container text-on-secondary-container hover:bg-secondary-container/90"
             : "text-on-surface-variant hover:bg-on-surface/8 active:bg-on-surface/12"
         )}
       >
@@ -93,11 +93,11 @@ export default function SideNav({
     <div className="flex flex-col h-full">
       {/* Header */}
       {showLabels && (
-        <div className="px-4 py-6 border-b border-outline-variant">
-          <h2 className="md3-title-medium text-on-surface font-medium">
+        <div className="px-4 py-[10px] border-b border-[--md-sys-color-outline-variant]">
+          <h1 className="md3-title-large text-[--md-sys-color-on-surface] font-semibold">
             Gerson
-          </h2>
-          <p className="md3-body-small text-on-surface-variant mt-1">
+          </h1>
+          <p className="md3-body-small text-[--md-sys-color-on-surface-variant] mt-[-2px]">
             Call Center IA
           </p>
         </div>
@@ -119,7 +119,7 @@ export default function SideNav({
 
       {/* User Section */}
       {showLabels && (
-        <div className="border-t border-outline-variant p-3">
+        <div className="border-t border-[--md-sys-color-outline-variant] p-3">
           <div className="flex items-center gap-3 px-4 py-3 rounded-lg bg-surface-variant">
             <div className="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center">
               <User className="h-4 w-4" />
@@ -133,7 +133,7 @@ export default function SideNav({
               </p>
             </div>
           </div>
-          
+
           <Button
             variant="ghost"
             onClick={() => handleItemClick('logout')}
@@ -154,10 +154,10 @@ export default function SideNav({
   if (mode === 'drawer') {
     return (
       <Sheet open={open} onOpenChange={onClose}>
-        <SheetContent 
-          side="left" 
+        <SheetContent
+          side="left"
           className={cn(
-            "w-80 p-0 bg-surface border-r border-outline-variant",
+            "w-80 p-0 bg-surface border-r border-[--md-sys-color-outline-variant]",
             "md3-elevation-1"
           )}
         >
@@ -170,7 +170,7 @@ export default function SideNav({
   // Desktop Navigation Rail/Drawer
   return (
     <aside className={cn(
-      "h-full bg-surface border-r border-outline-variant transition-all duration-300",
+      "h-full bg-surface border-r border-[--md-sys-color-outline-variant] transition-all duration-300",
       "md3-elevation-0",
       mode === 'expanded' ? "w-80" : "w-20"
     )}>
