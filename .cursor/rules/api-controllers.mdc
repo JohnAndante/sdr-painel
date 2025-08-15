@@ -19,9 +19,59 @@ alwaysApply: false
 
 ```
 controllers/
-├── AuthController.ts          # Authentication (example: src/controllers/AuthController.ts)
-├── [Future]UserController.ts  # Future user operations
-└── [Future]SessionController.ts # Session management
+├── AuthController.ts          # Authentication & company management
+├── SubjectController.ts       # Subject CRUD operations
+├── AgentController.ts         # Agent configuration
+├── CallController.ts          # Call operations & scheduling
+└── AnalyticsController.ts     # Analytics & reporting
+```
+
+### API Standards & Conventions
+
+#### HTTP Method Usage
+- **GET**: Retrieve data (idempotent, no side effects)
+- **POST**: Create new resources or complex operations
+- **PUT**: Update entire resource (idempotent)
+- **PATCH**: Partial updates (specific fields)
+- **DELETE**: Remove resources (idempotent)
+
+#### Response Status Codes
+- **200 OK**: Successful GET, PUT, PATCH
+- **201 Created**: Successful POST (resource created)
+- **204 No Content**: Successful DELETE
+- **400 Bad Request**: Invalid request data
+- **401 Unauthorized**: Missing/invalid authentication
+- **403 Forbidden**: Valid auth but insufficient permissions
+- **404 Not Found**: Resource doesn't exist
+- **409 Conflict**: Resource conflict (duplicate, etc.)
+- **422 Unprocessable Entity**: Validation errors
+- **500 Internal Server Error**: Server-side errors
+
+#### Request/Response Format
+All APIs should follow consistent JSON structure:
+
+```typescript
+// Standard success response
+interface ApiResponse<T> {
+    data: T;
+    message?: string;
+    timestamp: string;
+}
+
+// Standard error response
+interface ApiError {
+    error: {
+        code: number;
+        message: string;
+        details?: Record<string, any>;
+    };
+    timestamp: string;
+    request?: {
+        method: string;
+        url: string;
+        body?: any;
+    };
+}
 ```
 
 ## 🎯 Generic Controller Pattern

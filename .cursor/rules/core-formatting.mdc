@@ -187,7 +187,7 @@ class ErrorBoundary extends Component<Props, State> {
   }
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error("Uncaught error:", error, errorInfo);
+    console.error("Uncaught@error:", error, errorInfo);
     // You can also log the error to an error reporting service here
   }
 
@@ -226,4 +226,254 @@ console.error({
 // ❌ BAD
 console.log('login');
 console.log(error);
+```
+
+## Coding Conventions & Behavior Patterns
+
+### Variable Naming Standards
+- **Boolean variables**: Start with `is`, `has`, `can`, `should`
+- **Event handlers**: Start with `handle` or `on`
+- **Constants**: Use `UPPER_SNAKE_CASE`
+- **Private methods**: Prefix with `_` (even though not enforced)
+
+```typescript
+// ✅ GOOD
+const isAuthenticated = true;
+const hasPermission = false;
+const canEdit = user.role === 'admin';
+const shouldShowModal = isError && !isLoading;
+
+const handleSubmit = () => { /* ... */ };
+const onUserSelect = (user: User) => { /* ... */ };
+
+const API_TIMEOUT = 5000;
+const MAX_RETRY_ATTEMPTS = 3;
+
+class AuthController {
+    private _validateToken = (token: string) => { /* ... */ };
+}
+```
+
+### Function Design Principles
+- **Pure functions preferred**: No side effects when possible
+- **Max 3-4 parameters**: Use objects for complex parameters
+- **Early returns**: Avoid deep nesting
+- **Single responsibility**: One function, one purpose
+
+```typescript
+// ✅ GOOD: Pure function with early return
+const calculateDiscount = (price: number, userType: string): number => {
+    if (price <= 0) return 0;
+    if (userType === 'premium') return price * 0.2;
+    if (userType === 'regular') return price * 0.1;
+    return 0;
+};
+
+// ✅ GOOD: Object parameter for complex data
+interface CreateUserParams {
+    name: string;
+    email: string;
+    role: UserRole;
+    companyId: string;
+}
+
+const createUser = ({ name, email, role, companyId }: CreateUserParams) => {
+    // Implementation
+};
+
+// ❌ BAD: Too many parameters
+const createUserBad = (name: string, email: string, role: string, companyId: string, isActive: boolean, createdBy: string) => {
+    // Implementation
+};
+```
+
+### Component Architecture Rules
+- **Max 200 lines per component**: Split larger components
+- **Props interface always**: Even for simple components
+- **Default props**: Use destructuring with defaults
+- **Component composition**: Prefer composition over inheritance
+
+```typescript
+// ✅ GOOD: Well-structured component
+interface ButtonProps {
+    children: React.ReactNode;
+    variant?: 'primary' | 'secondary';
+    size?: 'sm' | 'md' | 'lg';
+    disabled?: boolean;
+    onClick?: () => void;
+}
+
+const Button: React.FC<ButtonProps> = ({
+    children,
+    variant = 'primary',
+    size = 'md',
+    disabled = false,
+    onClick
+}) => {
+    const classes = getButtonClasses(variant, size);
+
+    return (
+        <button
+            className={classes}
+            disabled={disabled}
+            onClick={onClick}
+        >
+            {children}
+        </button>
+    );
+};
+```
+
+### State Management Guidelines
+- **Local state first**: Use `useState` before considering external state
+- **Computed values**: Use `useMemo` for expensive calculations
+- **Event handlers**: Use `useCallback` for functions passed as props
+- **State normalization**: Keep state flat when possible
+
+```typescript
+// ✅ GOOD: Proper state management
+const UserList: React.FC = () => {
+    const [users, setUsers] = useState<User[]>([]);
+    const [filter, setFilter] = useState('');
+    const [loading, setLoading] = useState(false);
+
+    // Memoized computation
+    const filteredUsers = useMemo(() =>
+        users.filter(user => user.name.toLowerCase().includes(filter.toLowerCase()))
+    , [users, filter]);
+
+    // Memoized event handler
+    const handleUserSelect = useCallback((userId: string) => {
+        // Handle selection
+    }, []);
+
+    return (
+        <div>
+            <SearchInput value={filter} onChange={setFilter} />
+            {loading ? (
+                <LoadingSpinner />
+            ) : (
+                <UserTable users={filteredUsers} onSelect={handleUserSelect} />
+            )}
+        </div>
+    );
+};
+```
+
+## Code Review Standards
+
+### Must-Have Checklist
+- [ ] **Type safety**: No `any` types used
+- [ ] **Error handling**: All async operations have error handling
+- [ ] **Accessibility**: Interactive elements have proper ARIA labels
+- [ ] **Performance**: No unnecessary re-renders or calculations
+- [ ] **Testing**: Critical paths have unit tests
+- [ ] **Documentation**: Complex logic has comments
+
+### Code Quality Metrics
+- **Cyclomatic complexity**: Keep functions under 10 complexity score
+- **Test coverage**: Maintain >80% coverage on utilities and controllers
+- **Bundle size**: Monitor chunk sizes, lazy load when needed
+- **Accessibility score**: Maintain >95% Lighthouse accessibility score
+
+### Anti-Patterns to Avoid
+- **Prop drilling**: Use context or state management instead
+- **Inline styles**: Use Tailwind classes or CSS modules
+- **Direct DOM manipulation**: Use React patterns instead
+- **Mutating props**: Props should be treated as immutable
+- **Nested ternary operators**: Extract to functions for readability
+
+```typescript
+// ❌ BAD: Nested ternary
+{status === 'loading' ? <Spinner /> : status === 'error' ? <Error /> : status === 'success' ? <Success /> : null}
+
+// ✅ GOOD: Extracted function
+const renderStatus = () => {
+    switch (status) {
+        case 'loading': return <Spinner />;
+        case 'error': return <Error />;
+        case 'success': return <Success />;
+        default: return null;
+    }
+};
+
+return <div>{renderStatus()}</div>;
+```
+
+## Documentation Standards
+
+### Component Documentation
+Every component should have JSDoc comments explaining:
+- Purpose and usage
+- Props with examples
+- Accessibility considerations
+- Performance implications
+
+```typescript
+/**
+ * UserCard displays user information in a card format
+ *
+ * @example
+ * ```tsx
+ * <UserCard
+ *   user={userData}
+ *   onEdit={handleEdit}
+ *   showActions
+ * />
+ * ```
+ *
+ * @accessibility
+ * - Uses semantic HTML
+ * - Keyboard navigable
+ * - Screen reader friendly
+ */
+interface UserCardProps {
+    /** User data to display */
+    user: User;
+    /** Called when edit button is clicked */
+    onEdit?: (user: User) => void;
+    /** Whether to show action buttons */
+    showActions?: boolean;
+}
+
+const UserCard: React.FC<UserCardProps> = ({ user, onEdit, showActions = false }) => {
+    // Implementation
+};
+```
+
+### API Documentation
+Controllers should document:
+- Request/response types
+- Error conditions
+- Rate limiting
+- Authentication requirements
+
+```typescript
+/**
+ * SubjectController handles all subject-related API operations
+ *
+ * @authentication Required - Bearer token
+ * @rateLimit 100 requests per minute
+ */
+export default class SubjectController {
+    /**
+     * Creates a new subject
+     *
+     * @param subjectData - Subject information
+     * @returns Promise resolving to created subject
+     * @throws ValidationError when data is invalid
+     * @throws AuthError when unauthorized
+     *
+     * @example
+     * ```ts
+     * const subject = await SubjectController.createSubject({
+     *   name: 'John Doe',
+     *   phone: '+1234567890'
+     * });
+     * ```
+     */
+    static createSubject = (subjectData: SubjectRequest): Promise<Subject> => {
+        // Implementation
+    };
+}
 ```

@@ -1,0 +1,523 @@
+---
+description: Subject Management & Customer Data Patterns
+alwaysApply: true
+---
+
+# Subject Management & Customer Data Patterns
+
+## Subject Management Philosophy
+
+### Core Principles
+- **Data quality first**: Clean, accurate customer data drives successful calls
+- **Privacy by design**: GDPR/CCPA compliance built into every feature
+- **Scalable operations**: Support for millions of subjects with fast search
+- **Smart segmentation**: Intelligent categorization for targeted campaigns
+- **Import flexibility**: Support multiple data sources and formats
+- **Relationship tracking**: Maintain complete interaction history per subject
+
+### Data Integrity Standards
+- **Validation at entry**: Real-time validation of phone numbers and emails
+- **Deduplication**: Automatic detection and merging of duplicate records
+- **Data enrichment**: Enhance records with publicly available information
+- **Consent management**: Track and respect communication preferences
+- **Audit trail**: Complete history of data changes and access
+- **Regular cleanup**: Automated processes to maintain data quality
+
+## Subject Data Model
+
+### Types Definition
+```typescript
+// src/types/subject.types.ts
+export interface Subject {
+    id: string;
+    name: string;
+    phone: string;
+    email?: string;
+    tags?: string[];
+    customFields?: Record<string, string>;
+    createdAt: string;
+    updatedAt: string;
+    companyId: string;
+}
+
+export interface SubjectRequest {
+    name: string;
+    phone: string;
+    email?: string;
+    tags?: string[];
+    customFields?: Record<string, string>;
+}
+
+export interface SubjectFilters {
+    search?: string;
+    tags?: string[];
+    dateRange?: { start: string; end: string };
+}
+
+export interface BulkImportResult {
+    successful: number;
+    failed: number;
+    errors: { row: number; message: string }[];
+}
+```
+
+## Subject Controller
+
+### CRUD Operations
+```typescript
+// src/controllers/SubjectController.ts
+export default class SubjectController {
+    static getSubjects = (filters?: SubjectFilters): Promise<Subject[]> =>
+        new Promise((resolve, reject) => {
+            const params = new URLSearchParams();
+            if (filters?.search) params.append('search', filters.search);
+            if (filters?.tags?.length) params.append('tags', filters.tags.join(','));
+
+            axiosWebservice
+                .get(`/v4/subjects?${params.toString()}`)
+                .then(({ data }) => resolve(data))
+                .catch(reject);
+        });
+
+    static createSubject = (subjectData: SubjectRequest): Promise<Subject> =>
+        new Promise((resolve, reject) => {
+            axiosWebservice
+                .post('/v4/subjects', subjectData)
+                .then(({ data }) => resolve(data))
+                .catch(reject);
+        });
+
+    static updateSubject = (id: string, updates: Partial<SubjectRequest>): Promise<Subject> =>
+        new Promise((resolve, reject) => {
+            axiosWebservice
+                .put(`/v4/subjects/${id}`, updates)
+                .then(({ data }) => resolve(data))
+                .catch(reject);
+        });
+
+    static deleteSubject = (id: string): Promise<void> =>
+        new Promise((resolve, reject) => {
+            axiosWebservice
+                .delete(`/v4/subjects/${id}`)
+                .then(() => resolve())
+                .catch(reject);
+        });
+
+    static bulkImport = (csvFile: File): Promise<BulkImportResult> =>
+        new Promise((resolve, reject) => {
+            const formData = new FormData();
+            formData.append('file', csvFile);
+
+            axiosWebservice
+                .post('/v4/subjects/bulk-import', formData, {
+                    headers: { 'Content-Type': 'multipart/form-data' }
+                })
+                .then(({ data }) => resolve(data))
+                .catch(reject);
+        });
+}
+```
+
+## Subject Management Hook
+
+### Custom Hook for Subject Operations
+```typescript
+// src/hooks/useSubjects.ts
+export const useSubjects = () => {
+    const [subjects, setSubjects] = useState<Subject[]>([]);
+    const [filters, setFilters] = useState<SubjectFilters>({});
+    const [selectedSubjects, setSelectedSubjects] = useState<string[]>([]);
+
+    const { execute: fetchSubjects, loading } = useApiState(SubjectController.getSubjects);
+    const { execute: createSubject } = useApiState(SubjectController.createSubject);
+    const { execute: updateSubject } = useApiState(SubjectController.updateSubject);
+    const { execute: deleteSubject } = useApiState(SubjectController.deleteSubject);
+
+    const loadSubjects = useCallback(async () => {
+        try {
+            const data = await fetchSubjects(filters);
+            setSubjects(data);
+        } catch (error) {
+            console.error('Failed to load subjects:', error);
+        }
+    }, [fetchSubjects, filters]);
+
+    const handleCreate = useCallback(async (subjectData: SubjectRequest) => {
+        const newSubject = await createSubject(subjectData);
+        setSubjects(prev => [newSubject, ...prev]);
+        return newSubject;
+    }, [createSubject]);
+
+    const handleUpdate = useCallback(async (id: string, updates: Partial<SubjectRequest>) => {
+        const updatedSubject = await updateSubject(id, updates);
+        setSubjects(prev => prev.map(s => s.id === id ? updatedSubject : s));
+        return updatedSubject;
+    }, [updateSubject]);
+
+    const handleDelete = useCallback(async (id: string) => {
+        await deleteSubject(id);
+        setSubjects(prev => prev.filter(s => s.id !== id));
+    }, [deleteSubject]);
+
+    useEffect(() => {
+        loadSubjects();
+    }, [loadSubjects]);
+
+    return {
+        subjects,
+        loading,
+        filters,
+        setFilters,
+        selectedSubjects,
+        setSelectedSubjects,
+        handleCreate,
+        handleUpdate,
+        handleDelete,
+        refetch: loadSubjects,
+    };
+};
+```
+
+## Subject Table Component
+
+### Data Table with Actions
+```typescript
+// src/components/subjects/SubjectTable.tsx
+interface SubjectTableProps {
+    subjects: Subject[];
+    onEdit: (subject: Subject) => void;
+    onDelete: (id: string) => void;
+    selectedSubjects: string[];
+    onSelectionChange: (ids: string[]) => void;
+}
+
+const SubjectTable: React.FC<SubjectTableProps> = ({
+    subjects,
+    onEdit,
+    onDelete,
+    selectedSubjects,
+    onSelectionChange,
+}) => {
+    const columns: ColumnDef<Subject>[] = [
+        {
+            id: 'select',
+            header: ({ table }) => (
+                <Checkbox
+                    checked={table.getIsAllPageRowsSelected()}
+                    onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+                />
+            ),
+            cell: ({ row }) => (
+                <Checkbox
+                    checked={row.getIsSelected()}
+                    onCheckedChange={(value) => row.toggleSelected(!!value)}
+                />
+            ),
+        },
+        {
+            accessorKey: 'name',
+            header: 'Name',
+            cell: ({ row }) => (
+                <div className="font-medium">{row.getValue('name')}</div>
+            ),
+        },
+        {
+            accessorKey: 'phone',
+            header: 'Phone',
+            cell: ({ row }) => (
+                <div className="font-mono">{row.getValue('phone')}</div>
+            ),
+        },
+        {
+            accessorKey: 'email',
+            header: 'Email',
+            cell: ({ row }) => {
+                const email = row.getValue('email') as string;
+                return email ? (
+                    <div className="text-sm text-muted-foreground">{email}</div>
+                ) : (
+                    <div className="text-sm text-muted-foreground">—</div>
+                );
+            },
+        },
+        {
+            accessorKey: 'tags',
+            header: 'Tags',
+            cell: ({ row }) => {
+                const tags = row.getValue('tags') as string[];
+                return (
+                    <div className="flex flex-wrap gap-1">
+                        {tags?.map((tag) => (
+                            <Badge key={tag} variant="secondary" className="text-xs">
+                                {tag}
+                            </Badge>
+                        ))}
+                    </div>
+                );
+            },
+        },
+        {
+            id: 'actions',
+            header: 'Actions',
+            cell: ({ row }) => {
+                const subject = row.original;
+                return (
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="sm">
+                                <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => onEdit(subject)}>
+                                <Edit className="mr-2 h-4 w-4" />
+                                Edit
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                                onClick={() => onDelete(subject.id)}
+                                className="text-destructive"
+                            >
+                                <Trash className="mr-2 h-4 w-4" />
+                                Delete
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                );
+            },
+        },
+    ];
+
+    return (
+        <DataTable
+            columns={columns}
+            data={subjects}
+            onSelectionChange={onSelectionChange}
+        />
+    );
+};
+```
+
+## Subject Form Component
+
+### Create/Edit Form
+```typescript
+// src/components/subjects/SubjectForm.tsx
+interface SubjectFormProps {
+    subject?: Subject;
+    onSubmit: (data: SubjectRequest) => Promise<void>;
+    onCancel: () => void;
+}
+
+const SubjectForm: React.FC<SubjectFormProps> = ({ subject, onSubmit, onCancel }) => {
+    const form = useForm<SubjectRequest>({
+        defaultValues: {
+            name: subject?.name ?? '',
+            phone: subject?.phone ?? '',
+            email: subject?.email ?? '',
+            tags: subject?.tags ?? [],
+        },
+    });
+
+    const { execute: submitForm, loading } = useApiState(onSubmit);
+
+    const handleSubmit = async (data: SubjectRequest) => {
+        await submitForm(data);
+        onCancel(); // Close form on success
+    };
+
+    return (
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+            <FormField
+                control={form.control}
+                name="name"
+                rules={{ required: 'Name is required' }}
+                render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Name *</FormLabel>
+                        <FormControl>
+                            <Input {...field} placeholder="Enter subject name" />
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                )}
+            />
+
+            <FormField
+                control={form.control}
+                name="phone"
+                rules={{
+                    required: 'Phone is required',
+                    pattern: {
+                        value: /^\+?[\d\s\-\(\)]+$/,
+                        message: 'Invalid phone format'
+                    }
+                }}
+                render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Phone *</FormLabel>
+                        <FormControl>
+                            <Input {...field} placeholder="+1 (555) 123-4567" />
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                )}
+            />
+
+            <FormField
+                control={form.control}
+                name="email"
+                rules={{
+                    pattern: {
+                        value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                        message: 'Invalid email format'
+                    }
+                }}
+                render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                            <Input {...field} type="email" placeholder="email@example.com" />
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                )}
+            />
+
+            <div className="flex justify-end space-x-2">
+                <Button type="button" variant="outline" onClick={onCancel}>
+                    Cancel
+                </Button>
+                <Button type="submit" disabled={loading}>
+                    {loading ? 'Saving...' : subject ? 'Update' : 'Create'}
+                </Button>
+            </div>
+        </form>
+    );
+};
+```
+
+## Bulk Import Component
+
+### CSV Import with Validation
+```typescript
+// src/components/subjects/BulkImport.tsx
+const BulkImport: React.FC = () => {
+    const [file, setFile] = useState<File | null>(null);
+    const [result, setResult] = useState<BulkImportResult | null>(null);
+
+    const { execute: importFile, loading } = useApiState(SubjectController.bulkImport);
+
+    const handleFileSelect = (selectedFile: File) => {
+        setFile(selectedFile);
+        setResult(null);
+    };
+
+    const handleImport = async () => {
+        if (!file) return;
+
+        try {
+            const importResult = await importFile(file);
+            setResult(importResult);
+        } catch (error) {
+            console.error('Import failed:', error);
+        }
+    };
+
+    return (
+        <div className="space-y-4">
+            <FileUpload
+                accept=".csv,.xlsx"
+                onFileSelect={handleFileSelect}
+                maxSize={10 * 1024 * 1024} // 10MB
+            />
+
+            {file && (
+                <div className="p-4 border rounded-lg">
+                    <p className="font-medium">Selected file: {file.name}</p>
+                    <p className="text-sm text-muted-foreground">
+                        Size: {(file.size / 1024 / 1024).toFixed(2)} MB
+                    </p>
+                </div>
+            )}
+
+            {result && (
+                <Alert>
+                    <AlertDescription>
+                        Import completed: {result.successful} successful, {result.failed} failed
+                        {result.errors.length > 0 && (
+                            <details className="mt-2">
+                                <summary>View errors</summary>
+                                <ul className="mt-2 space-y-1">
+                                    {result.errors.map((error, index) => (
+                                        <li key={index} className="text-sm">
+                                            Row {error.row}: {error.message}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </details>
+                        )}
+                    </AlertDescription>
+                </Alert>
+            )}
+
+            <Button
+                onClick={handleImport}
+                disabled={!file || loading}
+                className="w-full"
+            >
+                {loading ? 'Importing...' : 'Import Subjects'}
+            </Button>
+        </div>
+    );
+};
+```
+
+## Subject Filters Component
+
+### Advanced Filtering
+```typescript
+// src/components/subjects/SubjectFilters.tsx
+interface SubjectFiltersProps {
+    filters: SubjectFilters;
+    onFiltersChange: (filters: SubjectFilters) => void;
+}
+
+const SubjectFilters: React.FC<SubjectFiltersProps> = ({ filters, onFiltersChange }) => {
+    const updateFilter = (key: keyof SubjectFilters, value: any) => {
+        onFiltersChange({ ...filters, [key]: value });
+    };
+
+    return (
+        <div className="flex flex-wrap gap-4 p-4 bg-muted/50 rounded-lg">
+            <div className="flex-1 min-w-[200px]">
+                <Input
+                    placeholder="Search subjects..."
+                    value={filters.search ?? ''}
+                    onChange={(e) => updateFilter('search', e.target.value)}
+                    className="w-full"
+                />
+            </div>
+
+            <TagSelector
+                value={filters.tags ?? []}
+                onChange={(tags) => updateFilter('tags', tags)}
+                placeholder="Filter by tags"
+            />
+
+            <DateRangePicker
+                value={filters.dateRange}
+                onChange={(range) => updateFilter('dateRange', range)}
+                placeholder="Creation date"
+            />
+
+            <Button
+                variant="outline"
+                onClick={() => onFiltersChange({})}
+                size="sm"
+            >
+                Clear Filters
+            </Button>
+        </div>
+    );
+};
+```

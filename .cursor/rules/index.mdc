@@ -7,7 +7,7 @@ alwaysApply: true
 
 This is the main index for all coding rules and patterns for the **`sdr-painel`** project. This project is a whitelabel Voice AI automation platform that allows companies to configure and scale customer voice contact through virtual agents, call scheduling, and conversation analytics.
 
-> **THIS PROJECT USES BUN, NOT NPM OR YARN**
+> **THIS PROJECT USES NPM**
 
 ## 📋 Documentation Structure
 
@@ -32,6 +32,7 @@ This is the main index for all coding rules and patterns for the **`sdr-painel`*
 ### Components & UI
 
 - **[component-patterns.mdc](./component-patterns.mdc)** - Patterns for building UI components with Radix UI and Tailwind CSS, including forms, data tables, and dashboards.
+- **[styling-system.mdc](./styling-system.mdc)** - 🎨 **ESSENTIAL**: Design tokens, Material Design 3 integration, Voice AI specific styling patterns, and CSS organization standards.
 - **[whitelabel-patterns.mdc](./whitelabel-patterns.mdc)** - Theming system, logo upload, color customization, and brand configuration patterns.
 
 ## 🎯 Critical Rules Summary
@@ -87,21 +88,21 @@ import axiosWebservice from '@/lib/axios-webservice';
 import type { Agent, AgentRequest, CallRequest } from '@/types';
 
 export default class AgentController {
-    static createAgent = (agentData: AgentRequest): Promise<Agent> =>
-        new Promise((resolve, reject) => {
-            axiosWebservice
-                .post('/v4/agents', agentData)
-                .then(({ data }) => resolve(data))
-                .catch(reject);
-        });
+  static createAgent = (agentData: AgentRequest): Promise<Agent> =>
+    new Promise((resolve, reject) => {
+      axiosWebservice
+        .post('/v4/agents', agentData)
+        .then(({ data }) => resolve(data))
+        .catch(reject);
+    });
 
-    static initiateCall = (callData: CallRequest): Promise<{ callId: string }> =>
-        new Promise((resolve, reject) => {
-            axiosWebservice
-                .post('/v4/calls/initiate', callData)
-                .then(({ data }) => resolve(data))
-                .catch(reject);
-        });
+  static initiateCall = (callData: CallRequest): Promise<{ callId: string }> =>
+    new Promise((resolve, reject) => {
+      axiosWebservice
+        .post('/v4/calls/initiate', callData)
+        .then(({ data }) => resolve(data))
+        .catch(reject);
+    });
 }
 ```
 
@@ -109,45 +110,47 @@ export default class AgentController {
 
 ```typescript
 // src/hooks/useApiState.ts
-import { useState, useCallback } from 'react';
+import { useCallback, useState } from 'react';
 
 export const useApiState = <T>(apiFunction: (...args: any[]) => Promise<T>) => {
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-    const [data, setData] = useState<T | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [data, setData] = useState<T | null>(null);
 
-    const execute = useCallback(
-        async (...args: unknown[]): Promise<T> => {
-            setLoading(true);
-            setError(null);
-            try {
-                const result = await apiFunction(...args);
-                setData(result);
-                return result;
-            } catch (err) {
-                const errorMessage =
-                    err instanceof Error ? err.message : 'Unknown error';
-                setError(errorMessage);
-                throw err;
-            } finally {
-                setLoading(false);
-            }
-        },
-        [apiFunction]
-    );
+  const execute = useCallback(
+    async (...args: unknown[]): Promise<T> => {
+      setLoading(true);
+      setError(null);
+      try {
+        const result = await apiFunction(...args);
+        setData(result);
+        return result;
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+        setError(errorMessage);
+        throw err;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [apiFunction]
+  );
 
-    return { execute, loading, error, data };
+  return { execute, loading, error, data };
 };
 
 // Usage in a component
 const {
-    execute: createAgent,
-    loading,
-    error,
-    data: agent,
+  execute: createAgent,
+  loading,
+  error,
+  data: agent,
 } = useApiState(AgentController.createAgent);
 
-const handleSubmit = useCallback((agentData: AgentRequest) => {
+const handleSubmit = useCallback(
+  (agentData: AgentRequest) => {
     createAgent(agentData);
-}, [createAgent]);
+  },
+  [createAgent]
+);
 ```

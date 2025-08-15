@@ -1,288 +1,546 @@
 ---
-description: Component Design Patterns with Chakra UI
+description: Component Patterns & UI Guidelines for Voice AI Platform
 alwaysApply: true
 ---
 
-# Component Design Patterns
+# Component Patterns & UI Guidelines
 
-This document defines the architectural standards for creating React components using Chakra UI, Lucide, and TailwindCSS, ensuring consistency, maintainability, and quality.
+## Component Design Philosophy
 
-## 🏗️ Core Philosophy: Atomic & Composable
+### Core Principles
+- **Composition over inheritance**: Build complex components from simple ones
+- **Single responsibility**: Each component has one clear purpose
+- **Accessibility first**: WCAG 2.1 AA compliance by default
+- **Responsive by design**: Mobile-first approach with Tailwind
+- **Theming support**: All components work with whitelabel system
+- **Radix UI foundation**: Use Radix primitives for complex interactions
+- **Tailwind styling**: Utility-first CSS with consistent design tokens
 
-Our architecture follows Atomic Design principles with Chakra UI as the foundation. Components should be small, single-purpose, and composable.
+### Component Hierarchy Guidelines
+- **Atomic design**: atoms → molecules → organisms → templates → pages
+- **Reusability**: Start with specific, then generalize based on usage
+- **Consistency**: Follow established patterns within the codebase
+- **Performance**: Lazy load heavy components, memoize when appropriate
 
-- **Composition over Inheritance**: Build complex UIs by combining Chakra UI components.
-- **Single Responsibility**: Each component should do one thing well.
-- **Chakra UI First**: Use Chakra UI components as the primary building blocks with its theme system.
-- **Styled System Integration**: Leverage Chakra UI's style props and theme tokens for consistent design.
-- **TailwindCSS as Complement**: Use Tailwind utilities only when Chakra UI styling is insufficient.
-- **Lucide Icons**: Use Lucide React for all iconography needs.
+## Component Architecture Standards
 
-## 📁 File & Folder Structure
-
-A clear, standardized structure is mandatory for all components. Each component must exist within its own folder.
+### File Structure
+Each component should follow this structure:
 
 ```
-src/
-└── components/
-    └── ui/
-        └── Button/
-            ├── index.tsx           # Component logic and JSX
-            ├── button.types.ts     # TypeScript interfaces and types
-            ├── button.theme.ts     # Chakra UI theme variants (optional)
-            └── button.stories.tsx  # Storybook stories (optional)
+src/components/
+├── ui/                     # Reusable UI primitives
+│   ├── button/
+│   │   ├── index.tsx       # Main component
+│   │   ├── button.types.ts # Type definitions
+│   │   └── button.test.tsx # Unit tests
+│   └── data-table/
+├── subjects/               # Domain-specific components
+│   ├── SubjectForm.tsx
+│   ├── SubjectTable.tsx
+│   └── BulkImport.tsx
+└── whitelabel/             # Theming components
+    ├── ThemeProvider.tsx
+    └── BrandedLogo.tsx
 ```
 
-- **`ui/`**: Contains base, reusable UI components that extend or compose Chakra UI components.
-- **`layout/`**: Components for page structure (containers, headers, sidebars).
-- **`feature/`**: Folders for components belonging to specific business features.
-- **`forms/`**: Form-specific components and field compositions.
-
-### File Naming Convention
-
-- **Component Logic**: `index.tsx`
-- **Types**: `[component-name].types.ts`
-- **Theme Variants**: `[component-name].theme.ts` (for custom Chakra theme extensions)
-- **Stories**: `[component-name].stories.tsx` (for Storybook documentation)
-
-## 🎯 Component Implementation Pattern (with Chakra UI)
-
-This pattern demonstrates how to create components using Chakra UI's system, with a `Button` as the primary example. We leverage Chakra's styled system, theme tokens, and component composition.
-
-### Step 1: Define Theme Variants (`button.theme.ts`) - Optional
-
-For complex components that need custom theme variants, define them here. This extends Chakra UI's theme system.
+### Component Template
+Every component should follow this pattern:
 
 ```typescript
-// src/components/ui/button/button.theme.ts
-import { defineStyle, defineStyleConfig } from '@chakra-ui/react';
+import React from 'react';
+import { cva, type VariantProps } from 'class-variance-authority';
+import { cn } from '@/lib/utils';
 
-const gradient = defineStyle({
-  background: 'linear-gradient(135deg, blue.400, purple.500)',
-  color: 'white',
-  _hover: {
-    background: 'linear-gradient(135deg, blue.500, purple.600)',
-    transform: 'translateY(-2px)',
-  },
-  _active: {
-    transform: 'translateY(0)',
-  },
-  transition: 'all 0.2s',
-});
+// 1. Variants using CVA for consistent styling
+const componentVariants = cva(
+    "base-classes", // Base styles
+    {
+        variants: {
+            variant: {
+                default: "default-styles",
+                destructive: "destructive-styles",
+            },
+            size: {
+                sm: "sm-styles",
+                lg: "lg-styles",
+            },
+        },
+        defaultVariants: {
+            variant: "default",
+            size: "sm",
+        },
+    }
+);
 
-const glass = defineStyle({
-  background: 'rgba(255, 255, 255, 0.1)',
-  backdropFilter: 'blur(10px)',
-  border: '1px solid',
-  borderColor: 'rgba(255, 255, 255, 0.2)',
-  color: 'white',
-  _hover: {
-    background: 'rgba(255, 255, 255, 0.2)',
-  },
-});
-
-export const buttonTheme = defineStyleConfig({
-  variants: {
-    gradient,
-    glass,
-  },
-});
-```
-
-### Step 2: Define Types (`button.types.ts`)
-
-The component's props interface extends Chakra UI's Button props and adds custom properties.
-
-```typescript
-// src/components/ui/button/button.types.ts
-import type { ButtonProps as ChakraButtonProps } from '@chakra-ui/react';
-import type { LucideIcon } from 'lucide-react';
-
-export interface ButtonProps extends ChakraButtonProps {
-  /** Loading state with spinner */
-  isLoading?: boolean;
-  /** Icon from Lucide React */
-  icon?: LucideIcon;
-  /** Icon position */
-  iconPosition?: 'left' | 'right';
-  /** Custom variant (extends Chakra's built-in variants) */
-  variant?: ChakraButtonProps['variant'] | 'gradient' | 'glass';
-  /** Tooltip text */
-  tooltip?: string;
-  /** Full width button */
-  fullWidth?: boolean;
+// 2. Props interface with proper documentation
+interface ComponentProps extends
+    React.HTMLAttributes<HTMLElement>,
+    VariantProps<typeof componentVariants>
+{
+    /** Main prop description */
+    children: React.ReactNode;
+    /** Optional prop with default */
+    disabled?: boolean;
 }
+
+// 3. Component with forwardRef for proper ref handling
+const Component = React.forwardRef<HTMLElement, ComponentProps>(
+    ({ className, variant, size, children, disabled = false, ...props }, ref) => {
+        return (
+            <element
+                className={cn(componentVariants({ variant, size, className }))}
+                ref={ref}
+                disabled={disabled}
+                {...props}
+            >
+                {children}
+            </element>
+        );
+    }
+);
+
+Component.displayName = 'Component';
+
+export { Component, componentVariants };
+export type { ComponentProps };
 ```
 
-### Step 3: Implement Component Logic (`index.tsx`)
+## UI Component Patterns
 
-The main component implementation uses Chakra UI's Button with enhanced functionality.
-
+### Button Component Example
 ```typescript
 // src/components/ui/button/index.tsx
 import React from 'react';
-import {
-  Button as ChakraButton,
-  Tooltip,
-  Spinner,
-  Icon,
-  forwardRef
-} from '@chakra-ui/react';
-import type { ButtonProps } from './button.types';
+import { Slot } from '@radix-ui/react-slot';
+import { cva, type VariantProps } from 'class-variance-authority';
+import { cn } from '@/lib/utils';
 
-const Button = forwardRef<ButtonProps, 'button'>(
-  ({
-    children,
-    isLoading,
-    icon,
-    iconPosition = 'left',
-    tooltip,
-    fullWidth,
-    disabled,
-    ...props
-  }, ref) => {
-    const IconComponent = icon ? <Icon as={icon} /> : null;
-
-    const buttonContent = (
-      <>
-        {isLoading && <Spinner size="sm" mr={2} />}
-        {!isLoading && IconComponent && iconPosition === 'left' && (
-          <Icon as={icon} mr={2} />
-        )}
-        {children}
-        {!isLoading && IconComponent && iconPosition === 'right' && (
-          <Icon as={icon} ml={2} />
-        )}
-      </>
-    );
-
-    const button = (
-      <ChakraButton
-        ref={ref}
-        isLoading={isLoading}
-        isDisabled={disabled || isLoading}
-        width={fullWidth ? 'full' : undefined}
-        {...props}
-      >
-        {buttonContent}
-      </ChakraButton>
-    );
-
-    if (tooltip) {
-      return (
-        <Tooltip label={tooltip} hasArrow>
-          {button}
-        </Tooltip>
-      );
+const buttonVariants = cva(
+    "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",
+    {
+        variants: {
+            variant: {
+                default: "bg-primary text-primary-foreground shadow hover:bg-primary/90",
+                destructive: "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
+                outline: "border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground",
+                secondary: "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
+                ghost: "hover:bg-accent hover:text-accent-foreground",
+                link: "text-primary underline-offset-4 hover:underline",
+            },
+            size: {
+                default: "h-9 px-4 py-2",
+                sm: "h-8 rounded-md px-3 text-xs",
+                lg: "h-10 rounded-md px-8",
+                icon: "h-9 w-9",
+            },
+        },
+        defaultVariants: {
+            variant: "default",
+            size: "default",
+        },
     }
-
-    return button;
-  }
 );
 
-Button.displayName = 'Button';
+interface ButtonProps
+    extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+    VariantProps<typeof buttonVariants> {
+    /** Render as a different element while keeping button styling */
+    asChild?: boolean;
+}
 
-export { Button };
-export type { ButtonProps };
+const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+    ({ className, variant, size, asChild = false, ...props }, ref) => {
+        const Comp = asChild ? Slot : "button";
+        return (
+            <Comp
+                className={cn(buttonVariants({ variant, size, className }))}
+                ref={ref}
+                {...props}
+            />
+        );
+    }
+);
+
+Button.displayName = "Button";
+
+export { Button, buttonVariants };
 ```
 
-## 📋 Component Development Checklist
-
-- [ ] **Can it be built from existing Chakra UI components?**
-- [ ] **Is it in its own folder (`Button/`)?**
-- [ ] **Are custom theme variants in a separate `*.theme.ts` file?**
-- [ ] **Are all types in a separate `*.types.ts` file?**
-- [ ] **Does it handle states like `isLoading`, `isDisabled`, `isInvalid`?**
-- [ ] **Does it use Chakra UI's style props and theme tokens?**
-- [ ] **Are Lucide icons used for all iconography?**
-- [ ] **Is it responsive using Chakra UI's responsive array syntax?**
-- [ ] **Does it follow Chakra UI's accessibility patterns?**
-- [ ] **Are TypeScript types properly exported?**
-- [ ] **Does it forward refs correctly using Chakra's `forwardRef`?**
-
-## 🎨 Styling Guidelines
-
-### Use Chakra UI Style Props First
+### Data Table Pattern
 ```typescript
-// ✅ Good: Chakra UI style props
-<Box p={4} bg="gray.100" borderRadius="md" _hover={{ bg: "gray.200" }}>
-  Content
-</Box>
+// src/components/ui/data-table/index.tsx
+import React from 'react';
+import {
+    flexRender,
+    getCoreRowModel,
+    useReactTable,
+    type ColumnDef,
+    type Table as TanStackTable,
+} from '@tanstack/react-table';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
-// ❌ Avoid: Direct CSS classes when Chakra props are available
-<div className="p-4 bg-gray-100 rounded-md hover:bg-gray-200">
-  Content
-</div>
+interface DataTableProps<TData, TValue> {
+    columns: ColumnDef<TData, TValue>[];
+    data: TData[];
+    loading?: boolean;
+    onRowSelectionChange?: (selectedRows: TData[]) => void;
+}
+
+function DataTable<TData, TValue>({
+    columns,
+    data,
+    loading = false,
+    onRowSelectionChange,
+}: DataTableProps<TData, TValue>) {
+    const [rowSelection, setRowSelection] = React.useState({});
+
+    const table = useReactTable({
+        data,
+        columns,
+        getCoreRowModel: getCoreRowModel(),
+        onRowSelectionChange: setRowSelection,
+        state: {
+            rowSelection,
+        },
+    });
+
+    // Notify parent of selection changes
+    React.useEffect(() => {
+        if (onRowSelectionChange) {
+            const selectedRows = table.getFilteredSelectedRowModel().rows.map(row => row.original);
+            onRowSelectionChange(selectedRows);
+        }
+    }, [rowSelection, table, onRowSelectionChange]);
+
+    if (loading) {
+        return <DataTableSkeleton />;
+    }
+
+    return (
+        <div className="rounded-md border">
+            <Table>
+                <TableHeader>
+                    {table.getHeaderGroups().map((headerGroup) => (
+                        <TableRow key={headerGroup.id}>
+                            {headerGroup.headers.map((header) => (
+                                <TableHead key={header.id}>
+                                    {header.isPlaceholder
+                                        ? null
+                                        : flexRender(
+                                            header.column.columnDef.header,
+                                            header.getContext()
+                                        )}
+                                </TableHead>
+                            ))}
+                        </TableRow>
+                    ))}
+                </TableHeader>
+                <TableBody>
+                    {table.getRowModel().rows?.length ? (
+                        table.getRowModel().rows.map((row) => (
+                            <TableRow
+                                key={row.id}
+                                data-state={row.getIsSelected() && "selected"}
+                            >
+                                {row.getVisibleCells().map((cell) => (
+                                    <TableCell key={cell.id}>
+                                        {flexRender(
+                                            cell.column.columnDef.cell,
+                                            cell.getContext()
+                                        )}
+                                    </TableCell>
+                                ))}
+                            </TableRow>
+                        ))
+                    ) : (
+                        <TableRow>
+                            <TableCell
+                                colSpan={columns.length}
+                                className="h-24 text-center"
+                            >
+                                No results.
+                            </TableCell>
+                        </TableRow>
+                    )}
+                </TableBody>
+            </Table>
+        </div>
+    );
+}
+
+export { DataTable };
 ```
 
-### Leverage Theme Tokens
-```typescript
-// ✅ Good: Using theme tokens
-<Text fontSize="lg" color="brand.500" fontWeight="semibold">
-  Heading
-</Text>
+## Form Component Patterns
 
-// ❌ Avoid: Hardcoded values
-<Text fontSize="18px" color="#3182CE" fontWeight={600}>
-  Heading
-</Text>
+### Form Field Pattern with React Hook Form
+```typescript
+// src/components/ui/form-field/index.tsx
+import React from 'react';
+import { Controller, type FieldPath, type FieldValues } from 'react-hook-form';
+import { Label } from '@/components/ui/label';
+import { cn } from '@/lib/utils';
+
+interface FormFieldProps<TFieldValues extends FieldValues, TName extends FieldPath<TFieldValues>> {
+    name: TName;
+    control: any; // Control from react-hook-form
+    label: string;
+    description?: string;
+    required?: boolean;
+    render: ({ field, fieldState }: any) => React.ReactElement;
+    className?: string;
+}
+
+function FormField<TFieldValues extends FieldValues, TName extends FieldPath<TFieldValues>>({
+    name,
+    control,
+    label,
+    description,
+    required = false,
+    render,
+    className,
+}: FormFieldProps<TFieldValues, TName>) {
+    return (
+        <Controller
+            name={name}
+            control={control}
+            render={({ field, fieldState }) => (
+                <div className={cn("space-y-2", className)}>
+                    <Label htmlFor={name} className={required ? "required" : ""}>
+                        {label}
+                        {required && <span className="text-destructive ml-1">*</span>}
+                    </Label>
+
+                    {render({ field, fieldState })}
+
+                    {description && (
+                        <p className="text-sm text-muted-foreground">{description}</p>
+                    )}
+
+                    {fieldState.error && (
+                        <p className="text-sm text-destructive">
+                            {fieldState.error.message}
+                        </p>
+                    )}
+                </div>
+            )}
+        />
+    );
+}
+
+export { FormField };
 ```
 
-### Responsive Design with Arrays
+## Modal/Dialog Patterns
+
+### Modal Component Pattern
 ```typescript
-// ✅ Good: Responsive arrays
-<Box
-  width={['full', 'md', 'lg']}
-  p={[4, 6, 8]}
-  fontSize={['sm', 'md', 'lg']}
->
-  Responsive content
-</Box>
+// src/components/ui/modal/index.tsx
+import React from 'react';
+import * as Dialog from '@radix-ui/react-dialog';
+import { X } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+
+interface ModalProps {
+    children: React.ReactNode;
+    title?: string;
+    description?: string;
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
+    size?: 'sm' | 'md' | 'lg' | 'xl';
+    className?: string;
+}
+
+const sizeClasses = {
+    sm: 'max-w-md',
+    md: 'max-w-lg',
+    lg: 'max-w-2xl',
+    xl: 'max-w-4xl',
+};
+
+const Modal: React.FC<ModalProps> = ({
+    children,
+    title,
+    description,
+    open,
+    onOpenChange,
+    size = 'md',
+    className,
+}) => {
+    return (
+        <Dialog.Root open={open} onOpenChange={onOpenChange}>
+            <Dialog.Portal>
+                <Dialog.Overlay className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
+                <Dialog.Content className={cn(
+                    "fixed left-[50%] top-[50%] z-50 grid w-full translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] rounded-lg",
+                    sizeClasses[size],
+                    className
+                )}>
+                    {(title || description) && (
+                        <div className="flex flex-col space-y-1.5 text-center sm:text-left">
+                            {title && (
+                                <Dialog.Title className="text-lg font-semibold leading-none tracking-tight">
+                                    {title}
+                                </Dialog.Title>
+                            )}
+                            {description && (
+                                <Dialog.Description className="text-sm text-muted-foreground">
+                                    {description}
+                                </Dialog.Description>
+                            )}
+                        </div>
+                    )}
+
+                    {children}
+
+                    <Dialog.Close asChild>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none"
+                        >
+                            <X className="h-4 w-4" />
+                            <span className="sr-only">Close</span>
+                        </Button>
+                    </Dialog.Close>
+                </Dialog.Content>
+            </Dialog.Portal>
+        </Dialog.Root>
+    );
+};
+
+export { Modal };
 ```
 
-### TailwindCSS Integration (When Needed)
-Use TailwindCSS only for:
-- Complex animations not available in Chakra UI
-- Grid layouts that are simpler with Tailwind
-- Specific utility classes not covered by Chakra
+## Accessibility Guidelines
 
+### Required Accessibility Patterns
+1. **Keyboard Navigation**: All interactive elements must be keyboard accessible
+2. **Screen Reader Support**: Use proper ARIA labels and descriptions
+3. **Color Contrast**: Minimum 4.5:1 contrast ratio for normal text
+4. **Focus Management**: Clear focus indicators and logical tab order
+5. **Semantic HTML**: Use proper HTML elements for their intended purpose
+
+### Accessibility Checklist
+- [ ] Interactive elements have `tabIndex` and keyboard handlers
+- [ ] Images have `alt` text or `aria-label`
+- [ ] Form fields have associated labels
+- [ ] Error messages are announced to screen readers
+- [ ] Loading states are communicated
+- [ ] Color is not the only way to convey information
+
+### ARIA Patterns Example
 ```typescript
-// ✅ Good: Chakra + Tailwind combination
-<Box className="animate-pulse" bg="gray.100" p={4}>
-  <Text>Loading with custom animation</Text>
-</Box>
+// Example: Accessible button with loading state
+const LoadingButton: React.FC<{
+    children: React.ReactNode;
+    loading?: boolean;
+    onClick?: () => void;
+}> = ({ children, loading = false, onClick }) => {
+    return (
+        <Button
+            onClick={onClick}
+            disabled={loading}
+            aria-busy={loading}
+            aria-describedby={loading ? "loading-description" : undefined}
+        >
+            {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {children}
+            {loading && (
+                <span id="loading-description" className="sr-only">
+                    Loading, please wait
+                </span>
+            )}
+        </Button>
+    );
+};
 ```
 
-## 🔧 Common Patterns
+## Performance Optimization Patterns
 
-### Icon Integration with Lucide
+### Component Memoization
 ```typescript
-import { Search, ChevronDown } from 'lucide-react';
+// Memoize expensive components
+const ExpensiveComponent = React.memo<{
+    data: ComplexData[];
+    onUpdate: (id: string) => void;
+}>(({ data, onUpdate }) => {
+    const processedData = useMemo(() => {
+        return data.map(item => expensiveCalculation(item));
+    }, [data]);
 
-// ✅ Good: Proper icon integration
-<Button leftIcon={<Search />} rightIcon={<ChevronDown />}>
-  Search & Filter
-</Button>
+    const handleUpdate = useCallback((id: string) => {
+        onUpdate(id);
+    }, [onUpdate]);
+
+    return (
+        <div>
+            {processedData.map(item => (
+                <Item key={item.id} data={item} onUpdate={handleUpdate} />
+            ))}
+        </div>
+    );
+});
 ```
 
-### Form Controls
+### Lazy Loading Pattern
 ```typescript
-// ✅ Good: Chakra form patterns
-<FormControl isInvalid={!!error} isRequired>
-  <FormLabel>Email</FormLabel>
-  <Input type="email" value={value} onChange={onChange} />
-  <FormErrorMessage>{error}</FormErrorMessage>
-</FormControl>
+// Lazy load heavy components
+const LazyChart = React.lazy(() => import('./HeavyChart'));
+
+const Dashboard: React.FC = () => {
+    const [showChart, setShowChart] = useState(false);
+
+    return (
+        <div>
+            <Button onClick={() => setShowChart(true)}>
+                Show Advanced Analytics
+            </Button>
+
+            {showChart && (
+                <Suspense fallback={<ChartSkeleton />}>
+                    <LazyChart />
+                </Suspense>
+            )}
+        </div>
+    );
+};
 ```
 
-### Loading States
-```typescript
-// ✅ Good: Chakra loading patterns
-<Button isLoading loadingText="Submitting...">
-  Submit
-</Button>
+## Testing Patterns
 
-<Skeleton isLoaded={!loading} height={20}>
-  <Text>Content that loads</Text>
-</Skeleton>
+### Component Testing Template
+```typescript
+// component.test.tsx
+import { render, screen, fireEvent } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { Component } from './component';
+
+describe('Component', () => {
+    it('renders correctly', () => {
+        render(<Component>Test content</Component>);
+        expect(screen.getByText('Test content')).toBeInTheDocument();
+    });
+
+    it('handles user interaction', async () => {
+        const user = userEvent.setup();
+        const handleClick = jest.fn();
+
+        render(
+            <Component onClick={handleClick}>
+                Click me
+            </Component>
+        );
+
+        await user.click(screen.getByRole('button', { name: 'Click me' }));
+        expect(handleClick).toHaveBeenCalledTimes(1);
+    });
+
+    it('is accessible', () => {
+        render(<Component aria-label="Test component">Content</Component>);
+        expect(screen.getByLabelText('Test component')).toBeInTheDocument();
+    });
+});
 ```

@@ -98,7 +98,7 @@ src/
 
 - **React 19 + TypeScript**: Type safety and modern features.
 - **Vite**: Fast development and build process.
-- **Radix UI + Tailwind**: Accessible, customizable UI with excellent data table support.
+- **Shadcn UI + Tailwind**: Accessible, customizable UI with excellent data table support.
 - **React Context**: For whitelabel theming and company-wide state.
 
 ### 3. Clear Separation of Concerns
@@ -135,8 +135,8 @@ src/
 
 ## Component Design Priority
 
-1.  **🥇 Radix UI + Tailwind CSS (Primary)**: Build accessible, unstyled components with Radix and style them with Tailwind.
-2.  **🥈 Custom Components (Secondary)**: If Radix doesn't provide a primitive, build a custom component following the same accessibility and composition principles.
+1.  **🥇 Shadcn UI + Tailwind CSS (Primary)**: Build accessible, unstyled components with Shadcn UI and style them with Tailwind.
+2.  **🥈 Custom Components (Secondary)**: If Shadcn UI doesn't provide a primitive, build a custom component following the same accessibility and composition principles.
 3.  **🥉 Third-Party Libraries (Last Resort)**: Only use if a complex component is absolutely necessary and building it from scratch is not feasible.
 
 ## State Management
